@@ -13,8 +13,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { SignInForm, signInSchema } from "@/types/auth";
+import { useAuth } from "@/context/auth/useAuth";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 
 const SignInPage = () => {
+  const router = useRouter();
+  const { signIn } = useAuth();
+
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<SignInForm>({
     email: "",
     password: "",
@@ -27,7 +35,7 @@ const SignInPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const result = signInSchema.safeParse(formData);
@@ -42,12 +50,24 @@ const SignInPage = () => {
       return;
     }
 
-    // ✅ Valid data
-    console.log("User Signed Up:", result.data);
-
-    // Reset form
-    setFormData({ email: "", password: "" });
-    setErrors({});
+    try {
+      setIsLoading(true);
+      await signIn(result.data.email, result.data.password);
+      router.replace("/");
+      toast.success("Sign in successfully!", {
+        description: "Welcome back!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const message =
+        error.response?.data?.detail || error.message || "Something went wrong";
+      toast.error(message);
+    } finally {
+      // Reset form
+      setFormData({ email: "", password: "" });
+      setErrors({});
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -95,13 +115,13 @@ const SignInPage = () => {
 
             {/* Submit Button */}
             <Button type="submit" className="w-full custom-btn">
-              Sign In
+              {isLoading ? <Loader className="animate-spin" /> : "Sign In"}
             </Button>
           </form>
           <p className="mt-4 text-sm text-center text-gray-500">
             Don&apos;t have an account?{" "}
             <Link href="/signup" className="text-blue-500 hover:underline">
-              Sign up
+              Sign Up
             </Link>
           </p>
         </CardContent>

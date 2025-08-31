@@ -7,6 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { createClass } from "@/api/class_room";
+import { Loader } from "lucide-react";
 
 const classSchema = z.object({
   name: z.string().min(4, "Class name must be at least 4 characters"),
@@ -18,6 +22,9 @@ const classSchema = z.object({
 type ClassForm = z.infer<typeof classSchema>;
 
 const CreateClass = () => {
+  const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<ClassForm>({
     name: "",
     description: "",
@@ -32,7 +39,7 @@ const CreateClass = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const result = classSchema.safeParse(formData);
@@ -47,12 +54,24 @@ const CreateClass = () => {
       return;
     }
 
-    // ✅ Valid data
-    console.log("Class Created:", result.data);
-
-    // reset form
-    setFormData({ name: "", description: "" });
-    setErrors({});
+    try {
+      setIsLoading(true);
+      await createClass(result.data.name, result.data.description);
+      router.push("/");
+      toast.success("Class created successfully!", {
+        description: "You can now view your new class.",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const message =
+        error.response?.data?.detail || error.message || "Something went wrong";
+      toast.error(message);
+    } finally {
+      // Reset form
+      setFormData({ name: "", description: "" });
+      setErrors({});
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -101,11 +120,8 @@ const CreateClass = () => {
             </div>
 
             {/* Submit Button */}
-            <Button
-              type="submit"
-              className="w-full custom-btn"
-            >
-              Create Class
+            <Button type="submit" className="w-full custom-btn">
+              {isLoading ? <Loader className="animate-spin" /> : "Create Class"}
             </Button>
           </form>
         </CardContent>

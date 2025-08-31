@@ -53,7 +53,7 @@ const SignUpPage = () => {
 
     try {
       setIsLoading(true);
-      await signUp(formData.name, formData.email, formData.password);
+      await signUp(result.data.name, result.data.email, result.data.password);
       router.push("/signin");
       toast.success("Account created successfully!", {
         description: "You can now log in with your new account.",

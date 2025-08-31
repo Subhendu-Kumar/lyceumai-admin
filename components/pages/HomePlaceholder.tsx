@@ -25,11 +25,11 @@ const HomePlaceholder = () => {
       </div>
 
       {/* Extra info (top right corner) */}
-      <div className="absolute top-6 right-6 text-sm flex flex-col items-center justify-center text-gray-500">
+      <div className="absolute top-6 right-6 text-sm flex flex-col items-end justify-center text-gray-500">
         <img
           src="/create_class_arrow.svg"
           alt="create class arrow"
-          className="h-16 w-auto"
+          className="h-16 w-auto "
         />
         <p className="text-right">
           Don’t see your classes? <br />
