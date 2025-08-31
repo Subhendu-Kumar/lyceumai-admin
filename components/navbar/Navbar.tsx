@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu, Plus, GraduationCap, User, LogOut } from "lucide-react";
+import { Plus, GraduationCap, User, LogOut, Menu } from "lucide-react";
 import { useAuth } from "@/context/auth/useAuth";
 import {
   DropdownMenu,

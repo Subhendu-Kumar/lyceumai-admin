@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 
 const HomePlaceholder = () => {
   return (
-    <main className="flex flex-col items-center justify-center h-full bg-white relative">
+    <main className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] bg-white relative">
       {/* Illustration */}
       <div className="flex flex-col items-center space-y-6">
         <img
