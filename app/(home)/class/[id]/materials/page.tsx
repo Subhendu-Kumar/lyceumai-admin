@@ -25,7 +25,7 @@ const skeletonArray = Array.from({ length: 6 });
 const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [fetching, setFetching] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");

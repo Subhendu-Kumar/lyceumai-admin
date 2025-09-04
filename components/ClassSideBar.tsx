@@ -13,11 +13,12 @@ const ClassSideBar = ({ params }: { params: Promise<{ id: string }> }) => {
     { href: `/class/${id}`, label: "Stream" },
     { href: `/class/${id}/announcements`, label: "Announcements" },
     { href: `/class/${id}/materials`, label: "Materials" },
+    { href: `/class/${id}/quiz`, label: "Quiz" },
     { href: `/class/${id}/people`, label: "People" },
   ];
 
   return (
-    <div className="w-64 h-full bg-blue-50 shadow-sm p-6">
+    <div className="w-72 h-full bg-blue-50 shadow-sm p-6">
       {" "}
       <nav className="flex flex-col space-y-2">
         {links.map(({ href, label }) => (
