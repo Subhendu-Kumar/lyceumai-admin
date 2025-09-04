@@ -18,9 +18,18 @@ export const getClassByID = async (id: string) => {
   }
 };
 
-export const createClass = async (name: string, description: string) => {
+export const createClass = async (
+  name: string,
+  description: string,
+  syllabus: File
+) => {
   try {
-    const res = await API.post("/admin/classroom", { name, description });
+    const formData = new FormData();
+    formData.append("syllabus", syllabus);
+    formData.append("name", name);
+    formData.append("description", description);
+
+    const res = await API.post("/admin/classroom", formData);
     return res;
   } catch (error) {
     throw error;
@@ -102,6 +111,57 @@ export const uploadMaterial = async (
 export const deleteMaterial = async (id: string) => {
   try {
     const res = await API.delete(`/class/material/${id}`);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addAnnouncement = async (
+  title: string,
+  message: string,
+  class_id: string
+) => {
+  try {
+    const res = await API.post(`/class/announcement`, {
+      title,
+      message,
+      class_id,
+    });
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateAnnouncement = async (
+  id: string,
+  title: string,
+  message: string
+) => {
+  try {
+    const res = await API.put(`/class/announcement/${id}`, {
+      title,
+      message,
+    });
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteAnnouncement = async (id: string) => {
+  try {
+    const res = await API.delete(`/class/announcement/${id}`);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAnnouncements = async (classroom_id: string) => {
+  try {
+    const res = await API.get(`/class/announcements/${classroom_id}`);
     return res;
   } catch (error) {
     throw error;

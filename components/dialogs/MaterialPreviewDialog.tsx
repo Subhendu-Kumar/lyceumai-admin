@@ -22,7 +22,7 @@ const MaterialPreviewDialog = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="custom-btn">Preview Material</Button>
+        <Button className="custom-btn">Preview</Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="min-w-[80vw] h-[80vh] max-w-none flex flex-col overflow-hidden">
         <div className="flex items-center justify-between gap-3 border-b pb-4 bg-white">

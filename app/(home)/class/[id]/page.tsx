@@ -9,6 +9,7 @@ import { getClassByID } from "@/api/class_room";
 import React, { use, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Copy, MessageSquare, Settings } from "lucide-react";
+import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
 
 const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -74,6 +75,22 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
               placeholder="Announce something to your class"
               className="flex-1"
             />
+          </CardContent>
+        </Card>
+        <Card className="shadow">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm">Syllabus</p>
+              <p className="text-gray-700 font-medium">
+                {classData?.name} syllabus
+              </p>
+            </div>
+            {classData?.syllabusUrl && (
+              <MaterialPreviewDialog
+                title={`${classData.name} Syllabus`}
+                fileUrl={classData.syllabusUrl}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

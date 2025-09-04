@@ -125,3 +125,7 @@
 .custom-btn {
   @apply bg-blue-600 hover:bg-blue-700 rounded-full cursor-pointer text-white font-medium transition;
 }
+
+.custom-btn-red {
+  @apply bg-red-600 hover:bg-red-700 rounded-full cursor-pointer text-white font-medium transition;
+}

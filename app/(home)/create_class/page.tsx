@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { createClass } from "@/api/class_room";
-import { Loader } from "lucide-react";
+import { FileUp, Loader } from "lucide-react";
 
 const classSchema = z.object({
   name: z.string().min(4, "Class name must be at least 4 characters"),
@@ -29,6 +29,7 @@ const CreateClass = () => {
     name: "",
     description: "",
   });
+  const [syllabus, setSyllabus] = useState<File | null>(null);
   const [errors, setErrors] = useState<
     Partial<Record<keyof ClassForm, string>>
   >({});
@@ -54,9 +55,13 @@ const CreateClass = () => {
       return;
     }
 
+    if (!syllabus) {
+      return toast.error("Please upload a syllabus file.");
+    }
+
     try {
       setIsLoading(true);
-      await createClass(result.data.name, result.data.description);
+      await createClass(result.data.name, result.data.description, syllabus);
       router.push("/");
       toast.success("Class created successfully!", {
         description: "You can now view your new class.",
@@ -117,6 +122,26 @@ const CreateClass = () => {
               {errors.description && (
                 <p className="text-sm text-red-500">{errors.description}</p>
               )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-medium">Syllabus:</p>
+              <label className="w-full h-28 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition">
+                <FileUp className="w-6 h-6 mb-1 text-gray-600" />
+                <span className="text-xs text-gray-500">
+                  {syllabus ? syllabus.name : "Click to select a file"}
+                </span>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setSyllabus(e.target.files[0]);
+                    }
+                  }}
+                  className="hidden"
+                />
+              </label>
             </div>
 
             {/* Submit Button */}

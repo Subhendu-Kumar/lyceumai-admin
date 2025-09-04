@@ -11,9 +11,9 @@ const ClassSideBar = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const links = [
     { href: `/class/${id}`, label: "Stream" },
+    { href: `/class/${id}/announcements`, label: "Announcements" },
     { href: `/class/${id}/materials`, label: "Materials" },
     { href: `/class/${id}/people`, label: "People" },
-    // { href: `/class/${id}/marks`, label: "Marks" },
   ];
 
   return (

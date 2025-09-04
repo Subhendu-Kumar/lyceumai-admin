@@ -78,7 +78,7 @@ const Home = () => {
   // );
 
   return (
-    <div className="w-full min-h-full p-10">
+    <div className="w-full min-h-full sm:p-10 p-4">
       <AnimatePresence mode="wait">
         {loading ? (
           <motion.div
