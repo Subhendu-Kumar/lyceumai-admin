@@ -1,34 +1,40 @@
-import React, { ChangeEvent, useState } from "react";
-import {
-  QuizRequest,
-  QuizRequestError,
-} from "@/app/(home)/class/[id]/quiz/page";
-import {
-  Dialog,
-  DialogTitle,
-  DialogHeader,
-  DialogContent,
-} from "@/components/ui/dialog";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectTrigger,
+  SelectContent,
 } from "../ui/select";
+import {
+  AlertDialog,
+  AlertDialogTitle,
+  AlertDialogCancel,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogDescription,
+} from "../ui/alert-dialog";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Loader } from "lucide-react";
+import { Textarea } from "../ui/textarea";
+import { QuizRequest, QuizRequestError } from "@/types/quiz";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 
 const CreateQuizDialog = ({
   open,
-  onOpenChange,
+  classId,
+  loading,
   formData,
+  submitData,
   setFormData,
+  onOpenChange,
 }: {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  classId: string;
+  loading: boolean;
   formData: QuizRequest;
+  submitData: () => Promise<void>;
+  onOpenChange: (open: boolean) => void;
   setFormData: React.Dispatch<React.SetStateAction<QuizRequest>>;
 }) => {
   const [errors, setErrors] = useState<QuizRequestError>({});
@@ -47,14 +53,45 @@ const CreateQuizDialog = ({
     }));
   };
 
-  const handleSubmit = () => {};
+  const validateForm = () => {
+    const newErrors: QuizRequestError = {};
+    if (!formData.title) {
+      newErrors.title = "Title is required";
+    }
+    if (!formData.description) {
+      newErrors.description = "Description is required";
+    }
+    if (formData.number_of_questions < 5 && formData.number_of_questions > 20) {
+      newErrors.number_of_questions =
+        "No of questions must be between 5 and 20";
+    }
+    const allowedDifficulties = ["EASY", "MEDIUM", "HARD"];
+    if (!allowedDifficulties.includes(formData.difficulty)) {
+      newErrors.difficulty = "Difficulty must be EASY, MEDIUM, or HARD.";
+    }
+    if (!formData.topic) {
+      newErrors.topic = "Topic is required";
+    }
+    return newErrors;
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    submitData();
+  };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[40rem]">
-        <DialogHeader>
-          <DialogTitle>Create Quiz With AI</DialogTitle>
-        </DialogHeader>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent className="w-[40rem]">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Create Quiz With AI</AlertDialogTitle>
+          <AlertDialogDescription>Class Id: {classId}</AlertDialogDescription>
+        </AlertDialogHeader>
         <form
           onSubmit={handleSubmit}
           className="w-full h-auto flex flex-col items-center justify-center gap-4"
@@ -145,15 +182,15 @@ const CreateQuizDialog = ({
               </Select>
             </div>
           </div>
-          <Button
-            type="submit"
-            className="custom-btn w-full"
-          >
-            create quiz
+          <Button type="submit" className="custom-btn w-full">
+            {loading ? <Loader className="animate-spin" /> : "create quiz"}
           </Button>
         </form>
-      </DialogContent>
-    </Dialog>
+        <AlertDialogCancel disabled={loading} className="cursor-pointer">
+          Cancel
+        </AlertDialogCancel>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

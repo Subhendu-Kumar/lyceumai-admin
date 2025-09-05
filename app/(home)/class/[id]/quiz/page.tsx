@@ -1,47 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
+import axios from "axios";
+import Link from "next/link";
 import { toast } from "sonner";
 import API from "@/api/axiosInstance";
 import { motion } from "motion/react";
+import { BASE_URL } from "@/lib/utils";
+import { useAuth } from "@/context/auth/useAuth";
+import { Quiz, QuizRequest } from "@/types/quiz";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import React, { use, useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import CreateQuizDialog from "@/components/dialogs/CreateQuizDialog";
-
-interface Quiz {
-  id: string;
-  title: string;
-  description: string;
-  published: boolean;
-  updatedAt: string;
-}
-
-export type Difficulty = "EASY" | "MEDIUM" | "HARD";
-
-export interface QuizRequest {
-  title: string;
-  topic: string;
-  class_id: string;
-  description: string;
-  number_of_questions: number;
-  difficulty: Difficulty;
-}
-
-export interface QuizRequestError {
-  title?: string;
-  topic?: string;
-  class_id?: string;
-  description?: string;
-  number_of_questions?: number;
-  difficulty?: Difficulty;
-}
 
 const QuizPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
+  const { accessToken } = useAuth();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [creatingQuiz, setCreatingQuiz] = useState<boolean>(false);
   const [createQuizForm, setCreateQuizForm] = useState<QuizRequest>({
     title: "",
     topic: "",
@@ -74,13 +54,49 @@ const QuizPage = ({ params }: { params: Promise<{ id: string }> }) => {
     fetchQuizzes();
   }, [id]);
 
+  const handleCreateQuiz = async () => {
+    try {
+      setCreatingQuiz(true);
+      const res = await axios.post(
+        `${BASE_URL}/quiz/generate`,
+        createQuizForm,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (res.status === 201) {
+        setQuizzes((prev) => [...prev, res.data.quiz]);
+      }
+    } catch (error: any) {
+      const message =
+        error.response?.data?.detail || error.message || "Something went wrong";
+      toast.error(message);
+    } finally {
+      setCreatingQuiz(false);
+      setOpenCreateQuizDialog(false);
+      setCreateQuizForm({
+        title: "",
+        topic: "",
+        class_id: "",
+        description: "",
+        difficulty: "EASY",
+        number_of_questions: 0,
+      });
+    }
+  };
+
   return (
     <div className="container mx-auto py-10">
       <CreateQuizDialog
-        open={openCreateQuizDialog}
-        onOpenChange={setOpenCreateQuizDialog}
+        classId={id}
+        loading={creatingQuiz}
         formData={createQuizForm}
+        open={openCreateQuizDialog}
+        submitData={handleCreateQuiz}
         setFormData={setCreateQuizForm}
+        onOpenChange={setOpenCreateQuizDialog}
       />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Available Quizzes</h1>
@@ -129,7 +145,9 @@ const QuizPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 <div>
                   <h2 className="text-lg font-semibold">{quiz.title}</h2>
                   <p className="text-gray-700 text-sm line-clamp-3">
-                    {quiz.description}
+                    {quiz.description.length > 100
+                      ? quiz.description.slice(0, 100) + "..."
+                      : quiz.description}
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between">
@@ -137,11 +155,16 @@ const QuizPage = ({ params }: { params: Promise<{ id: string }> }) => {
                     {quiz.published ? "Published" : "Unpublished"}
                   </span>
                   <span className="text-sm text-gray-500">
-                    {new Date(quiz.updatedAt).toLocaleDateString()}
+                    {quiz?.updatedAt &&
+                      new Date(quiz?.updatedAt).toLocaleDateString()}
                   </span>
                 </div>
-                <Button className="custom-btn mt-4">Start Quiz</Button>
               </CardContent>
+              <CardFooter className="justify-end px-4">
+                <Link href={`/class/${id}/quiz/${quiz.id}`}>
+                  <Button className="custom-btn">Show</Button>
+                </Link>
+              </CardFooter>
             </Card>
           ))}
         </div>
