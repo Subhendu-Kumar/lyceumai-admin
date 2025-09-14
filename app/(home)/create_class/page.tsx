@@ -1,16 +1,16 @@
 "use client";
 
 import { z } from "zod";
+import { toast } from "sonner";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { FileUp, Loader } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createClass } from "@/api/class_room";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { createClass } from "@/api/class_room";
-import { FileUp, Loader } from "lucide-react";
 
 const classSchema = z.object({
   name: z.string().min(4, "Class name must be at least 4 characters"),
@@ -42,9 +42,7 @@ const CreateClass = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const result = classSchema.safeParse(formData);
-
     if (!result.success) {
       const fieldErrors: Partial<Record<keyof ClassForm, string>> = {};
       result.error.issues.forEach((err) => {
@@ -54,11 +52,9 @@ const CreateClass = () => {
       setErrors(fieldErrors);
       return;
     }
-
     if (!syllabus) {
       return toast.error("Please upload a syllabus file.");
     }
-
     try {
       setIsLoading(true);
       await createClass(result.data.name, result.data.description, syllabus);
@@ -72,10 +68,10 @@ const CreateClass = () => {
         error.response?.data?.detail || error.message || "Something went wrong";
       toast.error(message);
     } finally {
-      // Reset form
-      setFormData({ name: "", description: "" });
       setErrors({});
+      setSyllabus(null);
       setIsLoading(false);
+      setFormData({ name: "", description: "" });
     }
   };
 
@@ -89,7 +85,6 @@ const CreateClass = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Class Name */}
             <div className="space-y-2">
               <Label htmlFor="name">Class Name</Label>
               <Input
@@ -105,8 +100,6 @@ const CreateClass = () => {
                 <p className="text-sm text-red-500">{errors.name}</p>
               )}
             </div>
-
-            {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -123,7 +116,6 @@ const CreateClass = () => {
                 <p className="text-sm text-red-500">{errors.description}</p>
               )}
             </div>
-
             <div className="flex flex-col gap-1">
               <p className="text-sm font-medium">Syllabus:</p>
               <label className="w-full h-28 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition">
@@ -143,8 +135,6 @@ const CreateClass = () => {
                 />
               </label>
             </div>
-
-            {/* Submit Button */}
             <Button type="submit" className="w-full custom-btn">
               {isLoading ? <Loader className="animate-spin" /> : "Create Class"}
             </Button>

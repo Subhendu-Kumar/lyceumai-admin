@@ -8,15 +8,15 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import Link from "next/link";
-import React, { useState } from "react";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { SignInForm, signInSchema } from "@/types/auth";
 import { useAuth } from "@/context/auth/useAuth";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { Loader } from "lucide-react";
+import { SignInForm, signInSchema } from "@/types/auth";
 
 const SignInPage = () => {
   const router = useRouter();
@@ -37,9 +37,7 @@ const SignInPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const result = signInSchema.safeParse(formData);
-
     if (!result.success) {
       const fieldErrors: Partial<Record<keyof SignInForm, string>> = {};
       result.error.issues.forEach((err) => {
@@ -49,7 +47,6 @@ const SignInPage = () => {
       setErrors(fieldErrors);
       return;
     }
-
     try {
       setIsLoading(true);
       await signIn(result.data.email, result.data.password);
@@ -63,10 +60,9 @@ const SignInPage = () => {
         error.response?.data?.detail || error.message || "Something went wrong";
       toast.error(message);
     } finally {
-      // Reset form
-      setFormData({ email: "", password: "" });
       setErrors({});
       setIsLoading(false);
+      setFormData({ email: "", password: "" });
     }
   };
 
@@ -79,7 +75,6 @@ const SignInPage = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -95,8 +90,6 @@ const SignInPage = () => {
                 <p className="text-sm text-red-500">{errors.email}</p>
               )}
             </div>
-
-            {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -112,8 +105,6 @@ const SignInPage = () => {
                 <p className="text-sm text-red-500">{errors.password}</p>
               )}
             </div>
-
-            {/* Submit Button */}
             <Button type="submit" className="w-full custom-btn">
               {isLoading ? <Loader className="animate-spin" /> : "Sign In"}
             </Button>

@@ -10,13 +10,13 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth/useAuth";
 import { SignUpForm, signUpSchema } from "@/types/auth";
+import { ChangeEvent, FormEvent, useState } from "react";
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -32,15 +32,13 @@ const SignUpPage = () => {
     Partial<Record<keyof SignUpForm, string>>
   >({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     const result = signUpSchema.safeParse(formData);
-
     if (!result.success) {
       const fieldErrors: Partial<Record<keyof SignUpForm, string>> = {};
       result.error.issues.forEach((err) => {
@@ -50,7 +48,6 @@ const SignUpPage = () => {
       setErrors(fieldErrors);
       return;
     }
-
     try {
       setIsLoading(true);
       await signUp(result.data.name, result.data.email, result.data.password);
@@ -64,10 +61,9 @@ const SignUpPage = () => {
         error.response?.data?.detail || error.message || "Something went wrong";
       toast.error(message);
     } finally {
-      // Reset form
-      setFormData({ name: "", email: "", password: "" });
       setErrors({});
       setIsLoading(false);
+      setFormData({ name: "", email: "", password: "" });
     }
   };
 
@@ -82,7 +78,6 @@ const SignUpPage = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input
@@ -97,7 +92,6 @@ const SignUpPage = () => {
                 <p className="text-sm text-red-500">{errors.name}</p>
               )}
             </div>
-            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -113,7 +107,6 @@ const SignUpPage = () => {
                 <p className="text-sm text-red-500">{errors.email}</p>
               )}
             </div>
-            {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -129,7 +122,6 @@ const SignUpPage = () => {
                 <p className="text-sm text-red-500">{errors.password}</p>
               )}
             </div>
-            {/* Submit Button */}
             <Button type="submit" className="w-full custom-btn">
               {isLoading ? <Loader className="animate-spin" /> : "Sign Up"}
             </Button>

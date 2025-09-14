@@ -55,28 +55,6 @@ const Home = () => {
     }
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="w-full min-h-full p-10 grid grid-cols-4 gap-6">
-  //       {Array.from({ length: 4 }, (_, index) => (
-  //         <ClassCardSkeleton key={index} />
-  //       ))}
-  //     </div>
-  //   );
-  // }
-
-  // if (classes.length === 0) {
-  //   return <HomePlaceholder />;
-  // }
-
-  // return (
-  //   <div className="w-full min-h-full p-10 grid grid-cols-4 gap-6">
-  //     {classes.map((classRoom) => (
-  //       <ClassCard key={classRoom.id} classroom={classRoom} />
-  //     ))}
-  //   </div>
-  // );
-
   return (
     <div className="w-full min-h-full sm:p-10 p-4">
       <AnimatePresence mode="wait">
