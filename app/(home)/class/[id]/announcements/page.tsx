@@ -1,18 +1,18 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
-import { motion, AnimatePresence } from "motion/react";
-import { toast } from "sonner";
 import {
   addAnnouncement,
   deleteAnnouncement,
   getAnnouncements,
   updateAnnouncement,
 } from "@/api/class_room";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { motion, AnimatePresence } from "motion/react";
+import React, { use, useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface Announcement {
   id: string;
@@ -26,8 +26,8 @@ const AnnouncementsPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [formVisible, setFormVisible] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
