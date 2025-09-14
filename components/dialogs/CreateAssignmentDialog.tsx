@@ -50,8 +50,11 @@ const CreateAssignmentDialog = ({
     if (!formData.dueDate) {
       errors.dueDate = "Due date is required";
     }
-    if (!formData.description.trim()) {
-      errors.description = "Description is required";
+    if (!formData.referenceAns.trim()) {
+      errors.referenceAns = "Reference answer is required";
+    }
+    if (!formData.question.trim()) {
+      errors.question = "Question is required";
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -123,19 +126,34 @@ const CreateAssignmentDialog = ({
             )}
           </div>
           <div className="flex flex-col space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="question">Question</Label>
             <Textarea
-              id="description"
-              className="min-h-36 resize-none"
-              placeholder="Enter assignment description"
-              value={formData.description}
+              id="question"
+              className="min-h-14 resize-none"
+              placeholder="Enter assignment question"
+              value={formData.question}
               onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
+                setFormData({ ...formData, question: e.target.value })
               }
             />
-            {formErrors.description && (
+            {formErrors.question && (
+              <div className="text-sm text-red-500">{formErrors.question}</div>
+            )}
+          </div>
+          <div className="flex flex-col space-y-2">
+            <Label htmlFor="ans">Reference Ans</Label>
+            <Textarea
+              id="ans"
+              className="min-h-36 resize-none"
+              placeholder="Enter assignment reference answer"
+              value={formData.referenceAns}
+              onChange={(e) =>
+                setFormData({ ...formData, referenceAns: e.target.value })
+              }
+            />
+            {formErrors.referenceAns && (
               <div className="text-sm text-red-500">
-                {formErrors.description}
+                {formErrors.referenceAns}
               </div>
             )}
           </div>

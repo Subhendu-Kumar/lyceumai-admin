@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { toast } from "sonner";
 import API from "@/api/axiosInstance";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { use, useEffect, useState } from "react";
@@ -13,6 +15,7 @@ import CreateAssignmentDialog from "@/components/dialogs/CreateAssignmentDialog"
 
 const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
+  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showDialog, setShowDialog] = useState<boolean>(false);
@@ -21,7 +24,8 @@ const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
     title: "",
     dueDate: "",
     type: "TEXT",
-    description: "",
+    question: "",
+    referenceAns: "",
   });
 
   useEffect(() => {
@@ -66,9 +70,10 @@ const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
       setShowDialog(false);
       setFormData({
         title: "",
-        description: "",
-        type: "TEXT",
         dueDate: "",
+        question: "",
+        type: "TEXT",
+        referenceAns: "",
       });
     }
   };
@@ -96,12 +101,12 @@ const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div className="w-full h-auto p-6">
       <CreateAssignmentDialog
-        formData={formData}
-        setFormData={setFormData}
-        isLoading={isLoading}
         open={showDialog}
-        onOpenChange={setShowDialog}
+        formData={formData}
+        isLoading={isLoading}
         submitData={submitData}
+        setFormData={setFormData}
+        onOpenChange={setShowDialog}
       />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold mb-6">Assignments</h1>
@@ -141,7 +146,7 @@ const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 mb-3 line-clamp-3">
-                  {assignment.description}
+                  {assignment.question}
                 </p>
                 <div className="flex flex-col gap-2 text-sm mb-4">
                   <p>
@@ -165,14 +170,14 @@ const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                     variant="secondary"
                     className="cursor-pointer"
                     onClick={() =>
-                      console.log("Show submissions for", assignment.id)
+                      router.push(`/class/${id}/assignments/${assignment.id}`)
                     }
                   >
                     Show Submissions
                   </Button>
                   <Button
-                    className="cursor-pointer"
                     variant="destructive"
+                    className="cursor-pointer"
                     onClick={() => handleDelete(assignment.id)}
                   >
                     Delete
