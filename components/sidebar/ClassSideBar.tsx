@@ -1,13 +1,13 @@
 "use client";
 
 import clsx from "clsx";
-import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { use } from "react";
 
 const ClassSideBar = ({ params }: { params: Promise<{ id: string }> }) => {
   const pathname = usePathname();
-  const { id } = React.use(params);
+  const { id } = use(params);
 
   const links = [
     { href: `/class/${id}`, label: "Stream" },
@@ -19,8 +19,7 @@ const ClassSideBar = ({ params }: { params: Promise<{ id: string }> }) => {
   ];
 
   return (
-    <div className="w-72 h-full bg-blue-50 shadow-sm p-6">
-      {" "}
+    <div className="w-72 h-full bg-blue-50 shadow-sm p-6 hidden md:block">
       <nav className="flex flex-col space-y-2">
         {links.map(({ href, label }) => (
           <Link

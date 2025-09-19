@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, GraduationCap, User, LogOut, Menu } from "lucide-react";
+import { Plus, User, LogOut } from "lucide-react";
 import { useAuth } from "@/context/auth/useAuth";
 import {
   DropdownMenu,
@@ -10,9 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import Link from "next/link";
+import Image from "next/image";
+// import ClassMobileSidebar from "../sidebar/ClassMobileSidebar";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
+  const pathname = usePathname();
   const { user, signOut } = useAuth();
+  const isClassRoute = pathname.startsWith("/class");
 
   const AccountDropDown = () => (
     <DropdownMenu>
@@ -27,11 +32,9 @@ const Navbar = () => {
           My Account
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {/* <Link href={"/profile"}> */}
         <DropdownMenuItem className="flex items-center gap-2 hover:bg-gray-50">
           <User className="w-4 h-4 text-gray-600" /> Profile
         </DropdownMenuItem>
-        {/* </Link> */}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={signOut}
@@ -44,22 +47,19 @@ const Navbar = () => {
   );
 
   return (
-    <header className="w-full h-16 bg-blue-50 shadow-sm">
-      <div className="flex h-full w-full items-center justify-between px-4 py-2">
-        {/* Left section */}
+    <header className="w-full h-16 bg-blue-50 shadow-sm lg:px-10 md:px-8 sm:px-6 px-4">
+      <div className="flex h-full w-full items-center justify-between py-2">
         <div className="flex items-center space-x-3">
-          <button className="p-2 rounded-full hover:bg-gray-100">
-            <Menu className="h-6 w-6 text-gray-700" />
-          </button>
+          {isClassRoute && (
+            <div className="md:hidden">{/* <ClassMobileSidebar /> */}</div>
+          )}
           <Link href="/" className="flex items-center space-x-2">
-            <GraduationCap className="h-8 w-8 text-indigo-600" /> {/* Logo */}
+            <Image src={"/logo.png"} height={45} width={45} alt="Logo" />
             <span className="text-lg font-semibold text-gray-800">
               Lyceum AI
             </span>
           </Link>
         </div>
-
-        {/* Right section */}
         <div className="flex items-center space-x-4">
           <Link
             href="/create_class"
