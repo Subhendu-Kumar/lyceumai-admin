@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader } from "lucide-react";
+// import { Loader } from "lucide-react";
 import { useAuth } from "@/context/auth/useAuth";
 import { ReactNode, useEffect, useState } from "react";
 import { tokenProvider } from "@/actions/stream.actions";
@@ -30,15 +30,15 @@ const StreamVideoProvider = ({ children }: { children: ReactNode }) => {
     setVideoClient(client);
   }, [user, loading]);
 
-  if (!videoClient) {
-    return (
-      <div>
-        <Loader className="animate-spin" />
-      </div>
-    );
-  }
+  // if (!videoClient) {
+  //   return (
+  //     <div>
+  //       <Loader className="animate-spin" />
+  //     </div>
+  //   );
+  // }
 
-  return <StreamVideo client={videoClient}>{children}</StreamVideo>;
+  return <StreamVideo client={videoClient!}>{children}</StreamVideo>;
 };
 
 export default StreamVideoProvider;
