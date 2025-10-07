@@ -1,25 +1,82 @@
-/* eslint-disable */
 "use client";
 
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
 import { ClassRoom } from "@/types/classroom";
+import ReactDatePicker from "react-datepicker";
 import { Button } from "@/components/ui/button";
 import { getClassByID } from "@/api/class_room";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar, Copy, Plus } from "lucide-react";
 import React, { use, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Copy, MessageSquare, Settings } from "lucide-react";
+import MeetingPopUpModal from "@/components/dialogs/MeetingPopUpModal";
+import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
 
 const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const [classData, setClassData] = useState<ClassRoom | null>(null);
 
+  const [meetingState, setMeetingState] = useState<
+    "isScheduleMeeting" | "isInstantMeeting" | undefined
+  >();
+  const client = useStreamVideoClient();
+  const [values, setValues] = useState({
+    dateTime: new Date(),
+    description: "",
+    link: "",
+  });
+  const [callDetails, setCallDetails] = useState<Call>();
+
+  const createMeeting = async () => {
+    if (!client) {
+      return;
+    }
+    try {
+      if (!values.dateTime) {
+        toast("Please select a date and time");
+        return;
+      }
+      const id = crypto.randomUUID();
+      const call = client.call("default", id);
+
+      if (!call) {
+        throw new Error("failed to create call");
+      }
+
+      const startsAt =
+        values.dateTime.toISOString() || new Date(Date.now()).toISOString();
+      const description = values.description || "Instant meeting";
+
+      await call.getOrCreate({
+        data: {
+          starts_at: startsAt,
+          custom: {
+            description,
+          },
+        },
+      });
+
+      setCallDetails(call);
+
+      // if (!values.description) {
+      //   router.push(`/meeting/${call.id}`);
+      // }
+      toast("Meeting created Successfully");
+    } catch (error) {
+      console.log(error);
+      toast("Failed to create meeting!");
+    }
+  };
+
+  const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetails?.id}`;
+
   useEffect(() => {
     const fetchClass = async () => {
       try {
         const res = await getClassByID(id);
         setClassData(res.data.classroom);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.error("Error fetching class data:", error);
         const message =
@@ -32,10 +89,10 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
     fetchClass();
   }, [id]);
 
-  const handleCopy = async () => {
-    if (classData?.code) {
-      await navigator.clipboard.writeText(classData.code);
-      toast.success("Class code copied to clipboard");
+  const handleCopy = async (code: string) => {
+    if (code) {
+      await navigator.clipboard.writeText(code);
+      toast.success("copied to clipboard");
     }
   };
 
@@ -47,7 +104,7 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
       </section>
 
-      <div className="container mx-auto py-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="container mx-auto py-10 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardContent className="p-4 flex items-center justify-between">
             <div>
@@ -59,22 +116,11 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={handleCopy}
+              onClick={() => classData?.code && handleCopy(classData.code)}
               className="text-gray-600 hover:text-indigo-600"
             >
               <Copy className="w-5 h-5" />
             </Button>
-          </CardContent>
-        </Card>
-        <Card className="shadow md:col-span-2">
-          <CardContent className="p-4 flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-              <MessageSquare className="w-5 h-5 text-gray-600" />
-            </div>
-            <Input
-              placeholder="Announce something to your class"
-              className="flex-1"
-            />
           </CardContent>
         </Card>
         <Card className="shadow">
@@ -94,6 +140,92 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardContent>
         </Card>
       </div>
+
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div
+          className="px-6 py-6 flex flex-col bg-orange-300 justify-between w-full min-h-[240px] cursor-pointer rounded-[14px]"
+          onClick={() => setMeetingState("isInstantMeeting")}
+        >
+          <div className="flex items-center justify-center glassmorphism size-10 rounded-[10px]">
+            <Plus size={20} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl font-bold">New Meeting</h1>
+            <p className="text-lg font-normal">Start an instant meeting</p>
+          </div>
+        </div>
+        <div
+          className="px-6 py-6 flex flex-col bg-purple-300 justify-between w-full min-h-[240px] cursor-pointer rounded-[14px]"
+          onClick={() => setMeetingState("isScheduleMeeting")}
+        >
+          <div className="flex items-center justify-center glassmorphism size-10 rounded-[10px]">
+            <Calendar size={20} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl font-bold">Schedule Meeting</h1>
+            <p className="text-lg font-normal">Plan your meeting now</p>
+          </div>
+        </div>
+      </div>
+
+      {!callDetails ? (
+        <MeetingPopUpModal
+          isOpen={meetingState === "isScheduleMeeting"}
+          onClose={() => setMeetingState(undefined)}
+          title="Create Meeting"
+          handelClick={createMeeting}
+        >
+          <div className="flex flex-col gap-3">
+            <label className="text-base font-normal">
+              Add Meeting Description
+            </label>
+            <Textarea
+              className="bg-white border-none h-40 resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              placeholder="Enter meeting description"
+              onChange={(e) => {
+                setValues({ ...values, description: e.target.value });
+              }}
+            />
+          </div>
+          <div className="flex w-full flex-col gap-3">
+            <label className="text-base font-normal">Select Date & Time</label>
+            <ReactDatePicker
+              selected={values.dateTime}
+              onChange={(date) => {
+                setValues({ ...values, dateTime: date! });
+              }}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              timeCaption="time"
+              dateFormat="MMMM d, yyyy h:mm aa"
+              className="w-full rounded bg-white p-2 focus:outline-none"
+            />
+          </div>
+        </MeetingPopUpModal>
+      ) : (
+        <MeetingPopUpModal
+          isOpen={meetingState === "isScheduleMeeting"}
+          onClose={() => setMeetingState(undefined)}
+          title="Meeting Created"
+          btnText="Copy Meeting Link"
+          handelClick={() => {
+            navigator.clipboard.writeText(meetingLink);
+            toast("Link copied");
+          }}
+          img="/icons/checked.svg"
+          btnIcon="/icons/copy.svg"
+        />
+      )}
+
+      <MeetingPopUpModal
+        isOpen={meetingState === "isInstantMeeting"}
+        onClose={() => setMeetingState(undefined)}
+        className="text-center"
+        title="Start an instant meeting"
+        btnText="Start Meeting"
+        handelClick={createMeeting}
+      />
     </main>
   );
 };

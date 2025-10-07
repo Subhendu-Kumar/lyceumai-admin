@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner";
 import { Geist, Geist_Mono } from "next/font/google";
 import AuthProvider from "@/context/auth/AuthProvider";
+import StreamVideoProvider from "@/context/providers/StreamVideoProvider";
+import "react-datepicker/dist/react-datepicker.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased select-none`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <StreamVideoProvider>{children}</StreamVideoProvider>
+        </AuthProvider>
         <Toaster />
       </body>
     </html>
