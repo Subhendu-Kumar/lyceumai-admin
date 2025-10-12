@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
+import API from "@/api/axiosInstance";
 import { ClassRoom } from "@/types/classroom";
 import ReactDatePicker from "react-datepicker";
 import { Button } from "@/components/ui/button";
@@ -15,61 +16,20 @@ import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
 
 const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
-  const [classData, setClassData] = useState<ClassRoom | null>(null);
+  const client = useStreamVideoClient();
 
+  const [creatingClassMeeting, setCreatingClassMeeting] =
+    useState<boolean>(false);
+  const [classData, setClassData] = useState<ClassRoom | null>(null);
+  const [callDetails, setCallDetails] = useState<Call>();
   const [meetingState, setMeetingState] = useState<
     "isScheduleMeeting" | "isInstantMeeting" | undefined
   >();
-  const client = useStreamVideoClient();
   const [values, setValues] = useState({
-    dateTime: new Date(),
-    description: "",
     link: "",
+    description: "",
+    dateTime: new Date(),
   });
-  const [callDetails, setCallDetails] = useState<Call>();
-
-  const createMeeting = async () => {
-    if (!client) {
-      return;
-    }
-    try {
-      if (!values.dateTime) {
-        toast("Please select a date and time");
-        return;
-      }
-      const id = crypto.randomUUID();
-      const call = client.call("default", id);
-
-      if (!call) {
-        throw new Error("failed to create call");
-      }
-
-      const startsAt =
-        values.dateTime.toISOString() || new Date(Date.now()).toISOString();
-      const description = values.description || "Instant meeting";
-
-      await call.getOrCreate({
-        data: {
-          starts_at: startsAt,
-          custom: {
-            description,
-          },
-        },
-      });
-
-      setCallDetails(call);
-
-      // if (!values.description) {
-      //   router.push(`/meeting/${call.id}`);
-      // }
-      toast("Meeting created Successfully");
-    } catch (error) {
-      console.log(error);
-      toast("Failed to create meeting!");
-    }
-  };
-
-  const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetails?.id}`;
 
   useEffect(() => {
     const fetchClass = async () => {
@@ -95,6 +55,64 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
       toast.success("copied to clipboard");
     }
   };
+
+  const createMeeting = async () => {
+    if (!client) {
+      return;
+    }
+    setCreatingClassMeeting(true);
+    try {
+      if (!values.dateTime) {
+        toast("Please select a date and time");
+        return;
+      }
+
+      const callId = crypto.randomUUID();
+      const call = client.call("default", callId);
+
+      if (!call) {
+        throw new Error("failed to create call");
+      }
+
+      const description = values.description || "Instant meeting";
+      const meetStatus =
+        meetingState === "isInstantMeeting" ? "ONGOING" : "SCHEDULED";
+      const startsAt =
+        values.dateTime.toISOString() || new Date(Date.now()).toISOString();
+      const formattedDate = new Date(startsAt)
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "-");
+
+      await call.getOrCreate({
+        data: {
+          starts_at: startsAt,
+          custom: {
+            classId: id,
+            description: `${description} ${formattedDate}`,
+          },
+        },
+      });
+
+      await API.post("/meeting/create", {
+        meetStatus,
+        meetId: call.id,
+        classroomId: id,
+        MeetingTime: startsAt,
+      });
+
+      setCallDetails(call);
+      toast("Meeting created Successfully");
+    } catch (error) {
+      console.log(error);
+      toast("Failed to create meeting!");
+    } finally {
+      setMeetingState(undefined);
+      setValues({ ...values, description: "", dateTime: new Date() });
+      setCreatingClassMeeting(false);
+    }
+  };
+
+  const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetails?.id}`;
 
   return (
     <main>
@@ -174,6 +192,7 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
           onClose={() => setMeetingState(undefined)}
           title="Create Meeting"
           handelClick={createMeeting}
+          loading={creatingClassMeeting}
         >
           <div className="flex flex-col gap-3">
             <label className="text-base font-normal">
@@ -215,6 +234,7 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
           }}
           img="/icons/checked.svg"
           btnIcon="/icons/copy.svg"
+          loading={creatingClassMeeting}
         />
       )}
 
@@ -225,6 +245,7 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
         title="Start an instant meeting"
         btnText="Start Meeting"
         handelClick={createMeeting}
+        loading={creatingClassMeeting}
       />
     </main>
   );

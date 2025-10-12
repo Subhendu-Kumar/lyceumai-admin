@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Loader } from "lucide-react";
 
 interface MeetingModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface MeetingModalProps {
   img?: string;
   btnIcon?: string;
   className?: string;
+  loading: boolean;
 }
 
 const MeetingPopUpModal = ({
@@ -26,6 +28,7 @@ const MeetingPopUpModal = ({
   img,
   btnIcon,
   className,
+  loading,
 }: MeetingModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -42,11 +45,12 @@ const MeetingPopUpModal = ({
             className="bg-blue-500 hover:bg-blue-600 focus-visible:ring-0 focus-visible:ring-offset-0 text-base font-semibold"
             onClick={handelClick}
           >
-            {btnIcon && (
+            {!loading && btnIcon && (
               <Image src={btnIcon} alt="btn Icon" height={13} width={13} />
             )}
             &nbsp;&nbsp;
-            {btnText || "Schedule Meeting"}
+            {!loading && (btnText || "Schedule Meeting")}
+            {loading && <Loader className="animate-spin" />}
           </Button>
         </div>
       </DialogContent>
