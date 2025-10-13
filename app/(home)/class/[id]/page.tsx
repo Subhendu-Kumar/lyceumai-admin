@@ -2,26 +2,29 @@
 
 import { toast } from "sonner";
 import API from "@/api/axiosInstance";
+import { useRouter } from "next/navigation";
 import { ClassRoom } from "@/types/classroom";
 import ReactDatePicker from "react-datepicker";
 import { Button } from "@/components/ui/button";
 import { getClassByID } from "@/api/class_room";
+import { useAuth } from "@/context/auth/useAuth";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar, Copy, Plus } from "lucide-react";
 import React, { use, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import MeetingPopUpModal from "@/components/dialogs/MeetingPopUpModal";
-import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
 
 const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
+  const router = useRouter();
+  const { accessToken } = useAuth();
   const client = useStreamVideoClient();
 
   const [creatingClassMeeting, setCreatingClassMeeting] =
     useState<boolean>(false);
   const [classData, setClassData] = useState<ClassRoom | null>(null);
-  const [callDetails, setCallDetails] = useState<Call>();
   const [meetingState, setMeetingState] = useState<
     "isScheduleMeeting" | "isInstantMeeting" | undefined
   >();
@@ -100,8 +103,17 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
         MeetingTime: startsAt,
       });
 
-      setCallDetails(call);
       toast("Meeting created Successfully");
+
+      if (meetingState === "isInstantMeeting") {
+        window.open(
+          `${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${call.id}`,
+          "_blank",
+          "noopener,noreferrer"
+        );
+      } else {
+        router.push(`/class/${id}/meetings/upcoming`);
+      }
     } catch (error) {
       console.log(error);
       toast("Failed to create meeting!");
@@ -112,8 +124,6 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
     }
   };
 
-  const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetails?.id}`;
-
   return (
     <main>
       <section className="bg-[url('/Math.jpg')] bg-cover bg-center text-white rounded-2xl">
@@ -121,7 +131,6 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
           <h1 className="text-4xl font-bold">{classData?.name}</h1>
         </div>
       </section>
-
       <div className="container mx-auto py-10 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardContent className="p-4 flex items-center justify-between">
@@ -158,7 +167,6 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardContent>
         </Card>
       </div>
-
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
         <div
           className="px-6 py-6 flex flex-col bg-orange-300 justify-between w-full min-h-[240px] cursor-pointer rounded-[14px]"
@@ -185,59 +193,41 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
         </div>
       </div>
-
-      {!callDetails ? (
-        <MeetingPopUpModal
-          isOpen={meetingState === "isScheduleMeeting"}
-          onClose={() => setMeetingState(undefined)}
-          title="Create Meeting"
-          handelClick={createMeeting}
-          loading={creatingClassMeeting}
-        >
-          <div className="flex flex-col gap-3">
-            <label className="text-base font-normal">
-              Add Meeting Description
-            </label>
-            <Textarea
-              className="bg-white border-none h-40 resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              placeholder="Enter meeting description"
-              onChange={(e) => {
-                setValues({ ...values, description: e.target.value });
-              }}
-            />
-          </div>
-          <div className="flex w-full flex-col gap-3">
-            <label className="text-base font-normal">Select Date & Time</label>
-            <ReactDatePicker
-              selected={values.dateTime}
-              onChange={(date) => {
-                setValues({ ...values, dateTime: date! });
-              }}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              timeCaption="time"
-              dateFormat="MMMM d, yyyy h:mm aa"
-              className="w-full rounded bg-white p-2 focus:outline-none"
-            />
-          </div>
-        </MeetingPopUpModal>
-      ) : (
-        <MeetingPopUpModal
-          isOpen={meetingState === "isScheduleMeeting"}
-          onClose={() => setMeetingState(undefined)}
-          title="Meeting Created"
-          btnText="Copy Meeting Link"
-          handelClick={() => {
-            navigator.clipboard.writeText(meetingLink);
-            toast("Link copied");
-          }}
-          img="/icons/checked.svg"
-          btnIcon="/icons/copy.svg"
-          loading={creatingClassMeeting}
-        />
-      )}
-
+      <MeetingPopUpModal
+        isOpen={meetingState === "isScheduleMeeting"}
+        onClose={() => setMeetingState(undefined)}
+        title="Create Meeting"
+        handelClick={createMeeting}
+        loading={creatingClassMeeting}
+      >
+        <div className="flex flex-col gap-3">
+          <label className="text-base font-normal">
+            Add Meeting Description
+          </label>
+          <Textarea
+            className="bg-white border-none h-40 resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            placeholder="Enter meeting description"
+            onChange={(e) => {
+              setValues({ ...values, description: e.target.value });
+            }}
+          />
+        </div>
+        <div className="flex w-full flex-col gap-3">
+          <label className="text-base font-normal">Select Date & Time</label>
+          <ReactDatePicker
+            selected={values.dateTime}
+            onChange={(date) => {
+              setValues({ ...values, dateTime: date! });
+            }}
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            timeCaption="time"
+            dateFormat="MMMM d, yyyy h:mm aa"
+            className="w-full rounded bg-white p-2 focus:outline-none"
+          />
+        </div>
+      </MeetingPopUpModal>
       <MeetingPopUpModal
         isOpen={meetingState === "isInstantMeeting"}
         onClose={() => setMeetingState(undefined)}

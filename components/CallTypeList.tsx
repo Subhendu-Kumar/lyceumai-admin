@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import MeetingCard from "./cards/MeetingCard";
+import { useAuth } from "@/context/auth/useAuth";
 
 const CallTypeList = ({
   type,
@@ -15,6 +16,7 @@ const CallTypeList = ({
   classId: string;
 }) => {
   const router = useRouter();
+  const { accessToken } = useAuth();
   const [recordings, setRecordings] = useState<CallRecording[]>([]);
   const { endedCalls, upcomingCalls, callRecordings, isLoading } =
     useGetCalls(classId);
@@ -75,12 +77,12 @@ const CallTypeList = ({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {calls && calls.length > 0 ? (
-        calls.map((meeting: Call | CallRecording) => {
+        calls.map((meeting: Call | CallRecording, idx) => {
           return (
             <MeetingCard
-              key={(meeting as Call)?.id}
+              key={idx}
               icon={
                 type === "ended"
                   ? "/icons/previous.svg"
@@ -105,14 +107,23 @@ const CallTypeList = ({
               link={
                 type === "recordings"
                   ? (meeting as CallRecording).url
-                  : `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${
-                      (meeting as Call).id
-                    }`
+                  : `${
+                      process.env.NEXT_PUBLIC_BASE_URL
+                    }?auth_token=${accessToken}&meet_id=${(meeting as Call).id}`
               }
               handleClick={
                 type === "recordings"
                   ? () => router.push(`${(meeting as CallRecording).url}`)
-                  : () => router.push(`/meeting/${(meeting as Call).id}`)
+                  : () =>
+                      window.open(
+                        `${
+                          process.env.NEXT_PUBLIC_BASE_URL
+                        }?auth_token=${accessToken}&meet_id=${
+                          (meeting as Call).id
+                        }`,
+                        "_blank",
+                        "noopener,noreferrer"
+                      )
               }
             />
           );

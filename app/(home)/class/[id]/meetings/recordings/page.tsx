@@ -6,7 +6,7 @@ const MeetingRecordings = ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <section className="flex size-full flex-col gap-10">
-      <h1 className="text-3xl font-bold">Call Recordings</h1>
+      <h1 className="text-2xl mt-6 text-gray-600 font-semibold">Call Recordings</h1>
       <CallTypeList type="recordings" classId={id} />
     </section>
   );
