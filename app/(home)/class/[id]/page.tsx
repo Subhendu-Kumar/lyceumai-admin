@@ -12,7 +12,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar, Copy, Plus } from "lucide-react";
 import React, { use, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import MeetingPopUpModal from "@/components/dialogs/MeetingPopUpModal";
 import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
 
@@ -20,7 +19,6 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const router = useRouter();
   const { accessToken } = useAuth();
-  const client = useStreamVideoClient();
 
   const [creatingClassMeeting, setCreatingClassMeeting] =
     useState<boolean>(false);
@@ -60,21 +58,11 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
   };
 
   const createMeeting = async () => {
-    if (!client) {
-      return;
-    }
     setCreatingClassMeeting(true);
     try {
       if (!values.dateTime) {
         toast("Please select a date and time");
         return;
-      }
-
-      const callId = crypto.randomUUID();
-      const call = client.call("default", callId);
-
-      if (!call) {
-        throw new Error("failed to create call");
       }
 
       const description = values.description || "Instant meeting";
@@ -86,33 +74,25 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
         .toLocaleDateString("en-GB")
         .replace(/\//g, "-");
 
-      await call.getOrCreate({
-        data: {
-          starts_at: startsAt,
-          custom: {
-            classId: id,
-            description: `${description} ${formattedDate}`,
-          },
-        },
-      });
-
-      await API.post("/meeting/create", {
+      const res = await API.post("/meeting/create", {
         meetStatus,
-        meetId: call.id,
         classroomId: id,
-        MeetingTime: startsAt,
+        description: `${description} ${formattedDate}`,
+        meetingTime: startsAt,
       });
 
-      toast("Meeting created Successfully");
-
-      if (meetingState === "isInstantMeeting") {
-        window.open(
-          `${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${call.id}`,
-          "_blank",
-          "noopener,noreferrer"
-        );
-      } else {
-        router.push(`/class/${id}/meetings/upcoming`);
+      if (res.status === 201) {
+        const meetId = res.data.meetId;
+        toast("Meeting created Successfully");
+        if (meetingState === "isInstantMeeting") {
+          window.open(
+            `${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${meetId}`,
+            "_blank",
+            "noopener,noreferrer"
+          );
+        } else {
+          router.push(`/class/${id}/meetings/upcoming`);
+        }
       }
     } catch (error) {
       console.log(error);
