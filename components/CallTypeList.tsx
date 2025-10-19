@@ -1,32 +1,25 @@
 "use client";
-import { useGetCalls } from "@/hooks/useGetCalls";
-import { Call, CallRecording } from "@stream-io/video-react-sdk";
+
 import { Loader } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { formatDateTime } from "@/lib/utils";
 import MeetingCard from "./cards/MeetingCard";
-import { useAuth } from "@/context/auth/useAuth";
+import { useAuth } from "@/hooks/useAuth";
+import { Call, useGetCalls } from "@/hooks/useGetCalls";
 
 const CallTypeList = ({
   type,
   classId,
 }: {
-  type: "ended" | "upcoming" | "recordings";
+  type: "ended" | "upcoming";
   classId: string;
 }) => {
-  const router = useRouter();
   const { accessToken } = useAuth();
-  const [recordings, setRecordings] = useState<CallRecording[]>([]);
-  const { endedCalls, upcomingCalls, callRecordings, isLoading } =
-    useGetCalls(classId);
+  const { endedCalls, upcomingCalls, isLoading } = useGetCalls(classId);
 
   const getCalls = () => {
     switch (type) {
       case "ended":
         return endedCalls;
-      case "recordings":
-        return recordings;
       case "upcoming":
         return upcomingCalls;
       default:
@@ -38,36 +31,12 @@ const CallTypeList = ({
     switch (type) {
       case "ended":
         return "No Previous Calls Found";
-      case "recordings":
-        return "No Call Recordings Found";
       case "upcoming":
         return "No Upcoming Calls Found";
       default:
         return "";
     }
   };
-
-  useEffect(() => {
-    const fetchRecordings = async () => {
-      try {
-        const callData = await Promise.all(
-          callRecordings.map((meeting) => meeting.queryRecordings())
-        );
-        const recordings = callData
-          .filter((call) => call.recordings.length > 0)
-          .flatMap((call) => call.recordings);
-
-        setRecordings(recordings);
-      } catch (error) {
-        console.log(error);
-        toast("Try Again Later");
-      }
-    };
-
-    if (type === "recordings") {
-      fetchRecordings();
-    }
-  }, [type, callRecordings]);
 
   const calls = getCalls();
   const callsMessage = getNoCallsMessage();
@@ -79,51 +48,28 @@ const CallTypeList = ({
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {calls && calls.length > 0 ? (
-        calls.map((meeting: Call | CallRecording, idx) => {
+        calls.map((meeting: Call, idx) => {
           return (
             <MeetingCard
               key={idx}
               icon={
-                type === "ended"
-                  ? "/icons/previous.svg"
-                  : type === "upcoming"
-                  ? "/icons/upcoming.svg"
-                  : "/icons/recordings.svg"
+                type === "ended" ? "/icons/previous.svg" : "/icons/upcoming.svg"
               }
-              title={
-                (meeting as Call).state?.custom?.description ||
-                (meeting as CallRecording).filename?.substring(0, 20) ||
-                "Personal Meeting"
-              }
+              title={meeting.description || "Personal Meeting"}
               date={
-                (meeting as Call).state?.startsAt?.toLocaleString() ||
-                (meeting as CallRecording).start_time?.toLocaleString()
+                formatDateTime(meeting.end_time) ||
+                formatDateTime(meeting.start_time)
               }
               isPreviousMeeting={type === "ended"}
-              buttonIcon1={
-                type === "recordings" ? "/icons/play.svg" : undefined
-              }
-              buttonText={type === "recordings" ? "Play" : "Start"}
-              link={
-                type === "recordings"
-                  ? (meeting as CallRecording).url
-                  : `${
-                      process.env.NEXT_PUBLIC_BASE_URL
-                    }?auth_token=${accessToken}&meet_id=${(meeting as Call).id}`
-              }
-              handleClick={
-                type === "recordings"
-                  ? () => router.push(`${(meeting as CallRecording).url}`)
-                  : () =>
-                      window.open(
-                        `${
-                          process.env.NEXT_PUBLIC_BASE_URL
-                        }?auth_token=${accessToken}&meet_id=${
-                          (meeting as Call).id
-                        }`,
-                        "_blank",
-                        "noopener,noreferrer"
-                      )
+              buttonIcon1={undefined}
+              buttonText={"Start"}
+              link={`${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${meeting.id}`}
+              handleClick={() =>
+                window.open(
+                  `${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${meeting.id}`,
+                  "_blank",
+                  "noopener,noreferrer"
+                )
               }
             />
           );

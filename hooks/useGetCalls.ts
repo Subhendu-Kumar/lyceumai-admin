@@ -1,53 +1,50 @@
+import API from "@/api/axiosInstance";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/context/auth/useAuth";
-import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { useAuth } from "@/hooks/useAuth";
+
+export interface Call {
+  id: string;
+  classId: string;
+  start_time: string;
+  description: string;
+  end_time: string | null;
+}
 
 export const useGetCalls = (classId: string) => {
   const { user } = useAuth();
-  const client = useStreamVideoClient();
-  const [calls, setCalls] = useState<Call[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [calls, setCalls] = useState<Call[] | []>([]);
 
   useEffect(() => {
-    const loadCalls = async () => {
-      if (!client || !user?.id) {
-        return;
-      } else {
-        setIsLoading(true);
-      }
-
+    const fetchCalls = async () => {
+      setIsLoading(true);
       try {
-        const { calls } = await client.queryCalls({
-          sort: [{ field: "starts_at", direction: -1 }],
-          filter_conditions: {
-            starts_at: { $exists: true },
-            "custom.classId": classId,
-          },
-        });
-        setCalls(calls);
+        const response = await API.get(`/meeting/list/${classId}`);
+        if (response.status === 200) {
+          setCalls(response.data.meetings);
+        }
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching calls:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    loadCalls();
-  }, [classId, client, user?.id]);
+    fetchCalls();
+  }, [classId, user?.id]);
 
   const now = new Date();
 
-  const endedCalls = calls.filter(({ state: { startsAt, endedAt } }: Call) => {
-    return (startsAt && new Date(startsAt) < now) || !!endedAt;
+  const endedCalls = calls.filter(({ start_time, end_time }: Call) => {
+    return (start_time && new Date(start_time) < now) || !!end_time;
   });
 
-  const upcomingCalls = calls.filter(({ state: { startsAt } }: Call) => {
-    return startsAt && new Date(startsAt) > now;
+  const upcomingCalls = calls.filter(({ start_time }: Call) => {
+    return start_time && new Date(start_time) > now;
   });
 
   return {
+    isLoading,
     endedCalls,
     upcomingCalls,
-    callRecordings: calls,
-    isLoading,
   };
 };

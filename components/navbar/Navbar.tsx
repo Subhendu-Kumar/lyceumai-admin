@@ -1,6 +1,6 @@
 import React from "react";
 import { Plus, User, LogOut } from "lucide-react";
-import { useAuth } from "@/context/auth/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,

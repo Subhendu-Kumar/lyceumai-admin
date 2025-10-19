@@ -25,3 +25,23 @@ export const removeToken = (): void => {
     window.localStorage.removeItem("accessToken");
   }
 };
+
+export const formatDateTime = (dateString?: string | null): string => {
+  if (!dateString) return "N/A";
+
+  const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) return "Invalid date";
+
+  return date.toLocaleString("en-IN", {
+    hour12: true,
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    weekday: "short",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "Asia/Kolkata",
+  });
+};

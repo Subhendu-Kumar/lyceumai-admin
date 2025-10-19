@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/auth/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { SignUpForm, signUpSchema } from "@/types/auth";
 import { ChangeEvent, FormEvent, useState } from "react";
 

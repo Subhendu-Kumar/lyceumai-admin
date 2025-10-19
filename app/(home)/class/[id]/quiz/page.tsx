@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import API from "@/api/axiosInstance";
 import { motion } from "motion/react";
 import { BASE_URL } from "@/lib/utils";
-import { useAuth } from "@/context/auth/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Quiz, QuizRequest } from "@/types/quiz";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";

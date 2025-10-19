@@ -5,7 +5,7 @@
 
 import Image from "next/image";
 import { toast } from "sonner";
-import { useAuth } from "@/context/auth/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { use, useEffect, useState } from "react";
 import { Loader, UserPlus2, X } from "lucide-react";
 import {

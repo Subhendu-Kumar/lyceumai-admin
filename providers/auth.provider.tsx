@@ -2,8 +2,8 @@
 
 import axios from "axios";
 import { User } from "@/types/auth";
-import { AuthContext } from "./AuthContext";
 import { useEffect, useState } from "react";
+import { AuthContext } from "@/context/AuthContext";
 import { BASE_URL, getToken, removeToken, setToken } from "@/lib/utils";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {

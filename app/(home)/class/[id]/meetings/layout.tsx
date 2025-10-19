@@ -16,9 +16,8 @@ const ClassMeetingsLayout = ({
   const pathname = usePathname();
 
   const links = [
-    { href: `/class/${id}/meetings`, label: "Stats" },
-    { href: `/class/${id}/meetings/upcoming`, label: "Upcoming" },
-    { href: `/class/${id}/meetings/recordings`, label: "Recordings" },
+    { href: `/class/${id}/meetings`, label: "Ended Meetings" },
+    { href: `/class/${id}/meetings/upcoming`, label: "Upcoming Meetings" },
   ];
 
   return (

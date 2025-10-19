@@ -7,7 +7,7 @@ import { ClassRoom } from "@/types/classroom";
 import ReactDatePicker from "react-datepicker";
 import { Button } from "@/components/ui/button";
 import { getClassByID } from "@/api/class_room";
-import { useAuth } from "@/context/auth/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar, Copy, Plus } from "lucide-react";
 import React, { use, useEffect, useState } from "react";
