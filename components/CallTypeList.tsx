@@ -1,9 +1,10 @@
 "use client";
 
 import { Loader } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import { formatDateTime } from "@/lib/utils";
 import MeetingCard from "./cards/MeetingCard";
-import { useAuth } from "@/hooks/useAuth";
 import { Call, useGetCalls } from "@/hooks/useGetCalls";
 
 const CallTypeList = ({
@@ -13,6 +14,7 @@ const CallTypeList = ({
   type: "ended" | "upcoming";
   classId: string;
 }) => {
+  const router = useRouter();
   const { accessToken } = useAuth();
   const { endedCalls, upcomingCalls, isLoading } = useGetCalls(classId);
 
@@ -49,27 +51,28 @@ const CallTypeList = ({
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {calls && calls.length > 0 ? (
         calls.map((meeting: Call, idx) => {
+          const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${meeting.id}`;
           return (
             <MeetingCard
               key={idx}
+              link={meetingLink}
+              buttonText={"Start"}
+              buttonIcon1={undefined}
+              isPreviousMeeting={type === "ended"}
+              date={formatDateTime(meeting.start_time)}
+              title={meeting.description || "Personal Meeting"}
+              handleClick={() =>
+                window.open(meetingLink, "_blank", "noopener,noreferrer")
+              }
               icon={
                 type === "ended" ? "/icons/previous.svg" : "/icons/upcoming.svg"
               }
-              title={meeting.description || "Personal Meeting"}
-              date={
-                formatDateTime(meeting.end_time) ||
-                formatDateTime(meeting.start_time)
-              }
-              isPreviousMeeting={type === "ended"}
-              buttonIcon1={undefined}
-              buttonText={"Start"}
-              link={`${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${meeting.id}`}
-              handleClick={() =>
-                window.open(
-                  `${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${meeting.id}`,
-                  "_blank",
-                  "noopener,noreferrer"
-                )
+              onCardClick={
+                type === "upcoming"
+                  ? undefined
+                  : () => {
+                      router.push(`/class/${classId}/meetings/d/${meeting.id}`);
+                    }
               }
             />
           );
