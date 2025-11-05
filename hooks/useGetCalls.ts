@@ -1,13 +1,15 @@
 import API from "@/api/axiosInstance";
-import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
+
+export type MeetStatus = "ONGOING" | "CANCELED" | "SCHEDULED" | "COMPLETED";
 
 export interface Call {
   id: string;
-  classId: string;
-  start_time: string;
+  meetId: string;
   description: string;
-  end_time: string | null;
+  MeetingTime: string;
+  meetStatus: MeetStatus;
 }
 
 export const useGetCalls = (classId: string) => {
@@ -32,15 +34,15 @@ export const useGetCalls = (classId: string) => {
     fetchCalls();
   }, [classId, user?.id]);
 
-  const now = new Date();
+  const endedCalls = calls.filter(
+    ({ meetStatus }: Call) =>
+      meetStatus.trim().toUpperCase() === "COMPLETED" ||
+      meetStatus.trim().toUpperCase() === "CANCELED"
+  );
 
-  const endedCalls = calls.filter(({ start_time, end_time }: Call) => {
-    return (start_time && new Date(start_time) < now) || !!end_time;
-  });
-
-  const upcomingCalls = calls.filter(({ start_time }: Call) => {
-    return start_time && new Date(start_time) > now;
-  });
+  const upcomingCalls = calls.filter(
+    ({ meetStatus }: Call) => meetStatus.trim().toUpperCase() === "SCHEDULED"
+  );
 
   return {
     isLoading,

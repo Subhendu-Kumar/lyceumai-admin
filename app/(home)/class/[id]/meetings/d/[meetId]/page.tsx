@@ -130,7 +130,7 @@ const MeetingDetailsPage = ({
               <video
                 src={rec.url}
                 controls
-                className="w-full rounded-t-lg max-h-[400px] object-cover"
+                className="w-full max-h-[400px] object-cover"
               />
               <CardContent className="space-y-3 pt-4">
                 <p className="text-sm text-gray-500">

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { formatDateTime } from "@/lib/utils";
 import MeetingCard from "./cards/MeetingCard";
 import { Call, useGetCalls } from "@/hooks/useGetCalls";
+import { toast } from "sonner";
+import API from "@/api/axiosInstance";
 
 const CallTypeList = ({
   type,
@@ -51,19 +53,35 @@ const CallTypeList = ({
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {calls && calls.length > 0 ? (
         calls.map((meeting: Call, idx) => {
-          const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${meeting.id}`;
+          const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}?auth_token=${accessToken}&meet_id=${meeting.meetId}`;
           return (
             <MeetingCard
               key={idx}
-              link={meetingLink}
               buttonText={"Start"}
               buttonIcon1={undefined}
               isPreviousMeeting={type === "ended"}
-              date={formatDateTime(meeting.start_time)}
+              date={formatDateTime(meeting.MeetingTime)}
               title={meeting.description || "Personal Meeting"}
-              handleClick={() =>
-                window.open(meetingLink, "_blank", "noopener,noreferrer")
-              }
+              handleClick={async () => {
+                try {
+                  const res = await API.patch(
+                    `/meeting/${meeting.meetId}/status?status=ONGOING`
+                  );
+                  if (res.status === 200) {
+                    window.open(meetingLink, "_blank", "noopener,noreferrer");
+                  } else {
+                    toast("not able to start meeting right now");
+                  }
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (error: any) {
+                  console.log(error);
+                  const message =
+                    error.response?.data?.detail ||
+                    error.message ||
+                    "Something went wrong";
+                  toast.success(message);
+                }
+              }}
               icon={
                 type === "ended" ? "/icons/previous.svg" : "/icons/upcoming.svg"
               }
@@ -71,7 +89,9 @@ const CallTypeList = ({
                 type === "upcoming"
                   ? undefined
                   : () => {
-                      router.push(`/class/${classId}/meetings/d/${meeting.id}`);
+                      router.push(
+                        `/class/${classId}/meetings/d/${meeting.meetId}`
+                      );
                     }
               }
             />
