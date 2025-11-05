@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { toast } from "sonner";
@@ -9,6 +8,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { deleteClass, getClasses } from "@/api/class_room";
 import HomePlaceholder from "@/components/pages/HomePlaceholder";
 import ClassCardSkeleton from "@/components/cards/ClassCardSkeleton";
+import { getMessageFromError } from "@/lib/utils";
 
 const Home = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -22,12 +22,8 @@ const Home = () => {
         if (res.status === 200) {
           setClasses(res.data.classrooms);
         }
-      } catch (error: any) {
-        const message =
-          error.response?.data?.detail ||
-          error.message ||
-          "Something went wrong";
-        toast.error(message);
+      } catch (error) {
+        toast.error(getMessageFromError(error));
       } finally {
         setLoading(false);
       }
@@ -46,10 +42,8 @@ const Home = () => {
         id: deletingToastId,
         description: `Class ID: ${id}`,
       });
-    } catch (error: any) {
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message, {
+    } catch (error) {
+      toast.error(getMessageFromError(error), {
         description: `Class ID: ${id}`,
       });
     }

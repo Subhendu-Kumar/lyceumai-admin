@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import axios from "axios";
 import { toast } from "sonner";
-import { BASE_URL } from "@/lib/utils";
+import { BASE_URL, getMessageFromError } from "@/lib/utils";
 import { Question, Quiz } from "@/types/quiz";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,12 +32,8 @@ const QuizDetailsPage = ({
           });
           setQuestions(res.data.quiz.questions);
         }
-      } catch (error: any) {
-        const message =
-          error.response?.data?.detail ||
-          error.message ||
-          "Something went wrong";
-        toast.error(message);
+      } catch (error) {
+        toast.error(getMessageFromError(error));
       }
     };
     fetchQuiz();
@@ -57,11 +52,9 @@ const QuizDetailsPage = ({
       if (res.status == 202) {
         toast.success("Quiz published successfully", { id: toastId });
       }
-    } catch (error: any) {
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
+    } catch (error) {
       setQuiz((prev) => (prev ? { ...prev, published: false } : prev));
-      toast.error(message, { id: toastId });
+      toast.error(getMessageFromError(error), { id: toastId });
     }
   };
 
@@ -80,11 +73,7 @@ const QuizDetailsPage = ({
         <CardContent className="space-y-3">
           <p className="text-gray-600 text-base">{quiz?.description}</p>
           {quiz?.published ? (
-            <Button
-              className="custom-btn"
-            >
-              Show Submissions
-            </Button>
+            <Button className="custom-btn">Show Submissions</Button>
           ) : (
             <Button
               className="custom-btn"

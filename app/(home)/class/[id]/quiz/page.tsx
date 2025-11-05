@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
 import axios from "axios";
@@ -7,7 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import API from "@/api/axiosInstance";
 import { motion } from "motion/react";
-import { BASE_URL } from "@/lib/utils";
+import { BASE_URL, getMessageFromError } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Quiz, QuizRequest } from "@/types/quiz";
 import { Button } from "@/components/ui/button";
@@ -40,12 +38,8 @@ const QuizPage = ({ params }: { params: Promise<{ id: string }> }) => {
         if (res.status === 200) {
           setQuizzes(res.data.quizzes);
         }
-      } catch (error: any) {
-        const message =
-          error.response?.data?.detail ||
-          error.message ||
-          "Something went wrong";
-        toast.error(message);
+      } catch (error) {
+        toast.error(getMessageFromError(error));
       } finally {
         setLoading(false);
       }
@@ -69,10 +63,8 @@ const QuizPage = ({ params }: { params: Promise<{ id: string }> }) => {
       if (res.status === 201) {
         setQuizzes((prev) => [...prev, res.data.quiz]);
       }
-    } catch (error: any) {
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message);
+    } catch (error) {
+      toast.error(getMessageFromError(error));
     } finally {
       setCreatingQuiz(false);
       setOpenCreateQuizDialog(false);

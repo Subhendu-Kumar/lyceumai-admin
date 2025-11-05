@@ -11,6 +11,7 @@ import { createClass } from "@/api/class_room";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getMessageFromError } from "@/lib/utils";
 
 const classSchema = z.object({
   name: z.string().min(4, "Class name must be at least 4 characters"),
@@ -62,11 +63,8 @@ const CreateClass = () => {
       toast.success("Class created successfully!", {
         description: "You can now view your new class.",
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message);
+    } catch (error) {
+      toast.error(getMessageFromError(error));
     } finally {
       setErrors({});
       setSyllabus(null);

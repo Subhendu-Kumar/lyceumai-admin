@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "motion/react";
 import React, { use, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { getMessageFromError } from "@/lib/utils";
 
 interface Announcement {
   id: string;
@@ -69,11 +70,8 @@ const AnnouncementsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           setAnnouncements((prev) => [res.data.announcement, ...prev]);
         }
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message);
+    } catch (error) {
+      toast.error(getMessageFromError(error));
     } finally {
       setTitle("");
       setMessage("");
@@ -105,11 +103,8 @@ const AnnouncementsPage = ({ params }: { params: Promise<{ id: string }> }) => {
         setAnnouncements((prev) => prev.filter((a) => a.id !== id));
         if (editingId === id) handleCancel();
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message);
+    } catch (error) {
+      toast.error(getMessageFromError(error));
     }
   };
 

@@ -1,6 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
 import Image from "next/image";
@@ -14,6 +12,7 @@ import {
   removeStudent,
 } from "@/api/class_room";
 import { Input } from "@/components/ui/input";
+import { getMessageFromError } from "@/lib/utils";
 
 export interface Student {
   id: string;
@@ -42,11 +41,8 @@ const Peoples = ({ params }: { params: Promise<{ id: string }> }) => {
       setLoading(true);
       const res = await getClassEnrollments(id);
       setEnrollments(res.data.students);
-    } catch (error: any) {
-      console.error("Error fetching data:", error);
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message);
+    } catch (error) {
+      toast.error(getMessageFromError(error));
     } finally {
       setLoading(false);
     }
@@ -62,11 +58,8 @@ const Peoples = ({ params }: { params: Promise<{ id: string }> }) => {
         prev.filter((enrollment) => enrollment.student.id !== student_id)
       );
       toast.success("Student removed successfully");
-    } catch (error: any) {
-      console.error("Error removing student:", error);
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message);
+    } catch (error) {
+      toast.error(getMessageFromError(error));
     }
   };
 
@@ -81,11 +74,8 @@ const Peoples = ({ params }: { params: Promise<{ id: string }> }) => {
       toast.success("Student added successfully");
       setNewStudentEmail("");
       fetchStudents();
-    } catch (error: any) {
-      console.error("Error adding student:", error);
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message);
+    } catch (error) {
+      toast.error(getMessageFromError(error));
     } finally {
       setShowAddStudentForm(false);
     }

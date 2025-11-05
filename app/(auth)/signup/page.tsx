@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { SignUpForm, signUpSchema } from "@/types/auth";
 import { ChangeEvent, FormEvent, useState } from "react";
+import { getMessageFromError } from "@/lib/utils";
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -55,11 +56,8 @@ const SignUpPage = () => {
       toast.success("Account created successfully!", {
         description: "You can now log in with your new account.",
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message);
+    } catch (error) {
+      toast.error(getMessageFromError(error));
     } finally {
       setErrors({});
       setIsLoading(false);

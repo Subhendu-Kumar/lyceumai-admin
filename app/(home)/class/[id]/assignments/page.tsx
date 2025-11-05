@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
 import { toast } from "sonner";
@@ -12,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Assignment, AssignmentFormData } from "@/types/assignment";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import CreateAssignmentDialog from "@/components/dialogs/CreateAssignmentDialog";
+import { getMessageFromError } from "@/lib/utils";
 
 const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -36,12 +35,8 @@ const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
         if (res.status === 200) {
           setAssignments(res.data.assignments);
         }
-      } catch (error: any) {
-        const message =
-          error.response?.data?.detail ||
-          error.message ||
-          "Something went wrong";
-        toast.success(message);
+      } catch (error) {
+        toast.success(getMessageFromError(error));
       } finally {
         setLoading(false);
       }
@@ -60,11 +55,8 @@ const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
         setAssignments((prev) => [res.data.assignment, ...prev]);
         toast.success("Assignment created successfully");
       }
-    } catch (error: any) {
-      console.log(error);
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.success(message);
+    } catch (error) {
+      toast.success(getMessageFromError(error));
     } finally {
       setIsLoading(false);
       setShowDialog(false);
@@ -90,11 +82,8 @@ const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
         );
         toast.success("Assignment deleted successfully");
       }
-    } catch (error: any) {
-      console.log(error);
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.success(message);
+    } catch (error) {
+      toast.success(getMessageFromError(error));
     }
   };
 

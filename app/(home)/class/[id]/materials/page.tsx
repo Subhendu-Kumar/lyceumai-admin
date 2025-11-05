@@ -11,6 +11,7 @@ import { motion } from "motion/react";
 import React, { use, useEffect, useState } from "react";
 import MaterialUploadDialog from "@/components/dialogs/MaterialUploadDialog";
 import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
+import { getMessageFromError } from "@/lib/utils";
 
 type Material = {
   id: string;
@@ -57,12 +58,8 @@ const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
       await deleteMaterial(material_id);
       setMaterials((prev) => prev.filter((mat) => mat.id !== material_id));
       toast.success("Material deleted successfully");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error("Error fetching class data:", error);
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.success(message);
+    } catch (error) {
+      toast.success(getMessageFromError(error));
     }
   };
 
@@ -82,12 +79,8 @@ const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
         setMaterials((prev) => [res.data.material, ...prev]);
         toast.success("Material uploaded successfully");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error("Error fetching class data:", error);
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.success(message);
+    } catch (error) {
+      toast.success(getMessageFromError(error));
     } finally {
       setLoading(false);
       close();

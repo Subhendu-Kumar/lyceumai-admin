@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { SignInForm, signInSchema } from "@/types/auth";
+import { getMessageFromError } from "@/lib/utils";
 
 const SignInPage = () => {
   const router = useRouter();
@@ -54,11 +55,8 @@ const SignInPage = () => {
       toast.success("Sign in successfully!", {
         description: "Welcome back!",
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      const message =
-        error.response?.data?.detail || error.message || "Something went wrong";
-      toast.error(message);
+    } catch (error) {
+      toast.error(getMessageFromError(error));
     } finally {
       setErrors({});
       setIsLoading(false);
