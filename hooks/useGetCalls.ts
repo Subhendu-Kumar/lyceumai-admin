@@ -1,16 +1,8 @@
-import API from "@/api/axiosInstance";
+import API from "@/lib/api";
+
+import { Call } from "@/types/meeting";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
-
-export type MeetStatus = "ONGOING" | "CANCELED" | "SCHEDULED" | "COMPLETED";
-
-export interface Call {
-  id: string;
-  meetId: string;
-  description: string;
-  MeetingTime: string;
-  meetStatus: MeetStatus;
-}
 
 export const useGetCalls = (classId: string) => {
   const { user } = useAuth();

@@ -1,5 +1,4 @@
 import ClassSideBar from "@/components/sidebar/ClassSideBar";
-import React from "react";
 
 const ClassLayout = ({
   children,

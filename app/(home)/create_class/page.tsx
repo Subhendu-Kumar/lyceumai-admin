@@ -1,17 +1,18 @@
 "use client";
 
+import API from "@/lib/api";
+
 import { z } from "zod";
 import { toast } from "sonner";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FileUp, Loader } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClass } from "@/api/class_room";
 import { Button } from "@/components/ui/button";
+import { getMessageFromError } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getMessageFromError } from "@/lib/utils";
 
 const classSchema = z.object({
   name: z.string().min(4, "Class name must be at least 4 characters"),
@@ -58,7 +59,18 @@ const CreateClass = () => {
     }
     try {
       setIsLoading(true);
-      await createClass(result.data.name, result.data.description, syllabus);
+
+      const formData = new FormData();
+      formData.append("syllabus", syllabus);
+      formData.append("name", result.data.name);
+      formData.append("description", result.data.description);
+
+      const res = await API.post("/admin/classroom", formData);
+
+      if (res.status !== 201) {
+        throw new Error("Failed to create class");
+      }
+
       router.push("/");
       toast.success("Class created successfully!", {
         description: "You can now view your new class.",

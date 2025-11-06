@@ -1,31 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import API from "@/lib/api";
 import Image from "next/image";
+
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { use, useEffect, useState } from "react";
-import { Loader, UserPlus2, X } from "lucide-react";
-import {
-  addStudent,
-  getClassEnrollments,
-  removeStudent,
-} from "@/api/class_room";
 import { Input } from "@/components/ui/input";
+import { use, useEffect, useState } from "react";
 import { getMessageFromError } from "@/lib/utils";
-
-export interface Student {
-  id: string;
-  name: string;
-  email: string;
-}
-
-export interface Enrollment {
-  id: string;
-  student: Student;
-  classroomId: string;
-  joinedAt: string;
-}
+import { Loader, UserPlus2, X } from "lucide-react";
+import { Enrollment } from "@/types/classroom";
 
 const Peoples = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -39,7 +24,11 @@ const Peoples = ({ params }: { params: Promise<{ id: string }> }) => {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const res = await getClassEnrollments(id);
+      const res = await API.get(`/class/peoples/${id}`);
+
+      if (res.status !== 200) {
+        throw new Error("Failed to fetch students");
+      }
       setEnrollments(res.data.students);
     } catch (error) {
       toast.error(getMessageFromError(error));
@@ -53,7 +42,14 @@ const Peoples = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const handleRemoveStudent = async (student_id: string) => {
     try {
-      await removeStudent(student_id, id);
+      const res = await API.delete("/class/remove/student", {
+        data: { student_id, class_id: id },
+      });
+
+      if (res.status !== 202) {
+        throw new Error("Failed to remove student");
+      }
+
       setEnrollments((prev) =>
         prev.filter((enrollment) => enrollment.student.id !== student_id)
       );
@@ -70,7 +66,15 @@ const Peoples = ({ params }: { params: Promise<{ id: string }> }) => {
       return;
     }
     try {
-      await addStudent(newStudentEmail, id);
+      const res = await API.post(`/class/add/student`, {
+        email: newStudentEmail,
+        class_id: id,
+      });
+
+      if (res.status !== 201) {
+        throw new Error("Failed to add student");
+      }
+
       toast.success("Student added successfully");
       setNewStudentEmail("");
       fetchStudents();

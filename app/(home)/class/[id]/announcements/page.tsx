@@ -1,25 +1,16 @@
 "use client";
 
-import {
-  addAnnouncement,
-  deleteAnnouncement,
-  getAnnouncements,
-  updateAnnouncement,
-} from "@/api/class_room";
+import API from "@/lib/api";
+
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { motion, AnimatePresence } from "motion/react";
-import React, { use, useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { use, useEffect, useState } from "react";
 import { getMessageFromError } from "@/lib/utils";
-
-interface Announcement {
-  id: string;
-  title: string;
-  message: string;
-}
+import { Textarea } from "@/components/ui/textarea";
+import { Announcement } from "@/types/announcement";
+import { motion, AnimatePresence } from "motion/react";
+import { Card, CardContent } from "@/components/ui/card";
 
 const AnnouncementsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -33,17 +24,12 @@ const AnnouncementsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const res = await getAnnouncements(id);
+        const res = await API.get(`/class/announcements/${id}`);
         if (res.status === 200) {
           setAnnouncements(res.data.announcements);
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        const message =
-          error.response?.data?.detail ||
-          error.message ||
-          "Something went wrong";
-        toast.error(message);
+      } catch (error) {
+        toast.error(getMessageFromError(error));
       }
     };
     fetchAnnouncements();
@@ -55,7 +41,11 @@ const AnnouncementsPage = ({ params }: { params: Promise<{ id: string }> }) => {
     }
     try {
       if (editingId) {
-        const res = await updateAnnouncement(editingId, title, message);
+        const res = await API.put(`/class/announcement/${editingId}`, {
+          title,
+          message,
+        });
+
         if (res.status === 200) {
           setAnnouncements((prev) =>
             prev.map((a) =>
@@ -65,7 +55,12 @@ const AnnouncementsPage = ({ params }: { params: Promise<{ id: string }> }) => {
         }
         setEditingId(null);
       } else {
-        const res = await addAnnouncement(title, message, id);
+        const res = await API.post(`/class/announcement`, {
+          title,
+          message,
+          class_id: id,
+        });
+
         if (res.status === 201) {
           setAnnouncements((prev) => [res.data.announcement, ...prev]);
         }
@@ -98,7 +93,8 @@ const AnnouncementsPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await deleteAnnouncement(id);
+      const res = await API.delete(`/class/announcement/${id}`);
+
       if (res.status === 200) {
         setAnnouncements((prev) => prev.filter((a) => a.id !== id));
         if (editingId === id) handleCancel();

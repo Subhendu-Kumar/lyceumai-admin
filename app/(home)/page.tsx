@@ -1,14 +1,15 @@
 "use client";
 
-import { toast } from "sonner";
-import { ClassRoom } from "@/types/classroom";
-import React, { useEffect, useState } from "react";
+import API from "@/lib/api";
 import ClassCard from "@/components/cards/ClassCard";
-import { AnimatePresence, motion } from "motion/react";
-import { deleteClass, getClasses } from "@/api/class_room";
 import HomePlaceholder from "@/components/pages/HomePlaceholder";
 import ClassCardSkeleton from "@/components/cards/ClassCardSkeleton";
+
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { ClassRoom } from "@/types/classroom";
 import { getMessageFromError } from "@/lib/utils";
+import { AnimatePresence, motion } from "motion/react";
 
 const Home = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -18,7 +19,7 @@ const Home = () => {
     const fetchClasses = async () => {
       setLoading(true);
       try {
-        const res = await getClasses();
+        const res = await API.get("/admin/classrooms");
         if (res.status === 200) {
           setClasses(res.data.classrooms);
         }
@@ -36,7 +37,13 @@ const Home = () => {
       const deletingToastId = toast.loading("Deleting class", {
         description: `Class ID: ${id}`,
       });
-      await deleteClass(id);
+
+      const res = await API.delete(`/admin/classroom/${id}`);
+
+      if (res.status !== 202) {
+        throw new Error("Failed to delete class");
+      }
+
       setClasses((prev) => prev.filter((classRoom) => classRoom.id !== id));
       toast.success("Class deleted successfully", {
         id: deletingToastId,

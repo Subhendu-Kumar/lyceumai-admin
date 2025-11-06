@@ -1,19 +1,20 @@
 "use client";
 
-import { toast } from "sonner";
-import API from "@/api/axiosInstance";
-import { useRouter } from "next/navigation";
-import { ClassRoom } from "@/types/classroom";
+import API from "@/lib/api";
 import ReactDatePicker from "react-datepicker";
-import { Button } from "@/components/ui/button";
-import { getClassByID } from "@/api/class_room";
-import { useAuth } from "@/hooks/useAuth";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Copy, Plus } from "lucide-react";
-import React, { use, useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import MeetingPopUpModal from "@/components/dialogs/MeetingPopUpModal";
 import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
+
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { ClassRoom } from "@/types/classroom";
+import { Button } from "@/components/ui/button";
+import { use, useEffect, useState } from "react";
+import { getMessageFromError } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar, Copy, Plus } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -35,16 +36,10 @@ const ClassHome = ({ params }: { params: Promise<{ id: string }> }) => {
   useEffect(() => {
     const fetchClass = async () => {
       try {
-        const res = await getClassByID(id);
+        const res = await API.get(`/admin/classroom/${id}`);
         setClassData(res.data.classroom);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error("Error fetching class data:", error);
-        const message =
-          error.response?.data?.detail ||
-          error.message ||
-          "Something went wrong";
-        toast.error(message);
+      } catch (error) {
+        toast.error(getMessageFromError(error));
       }
     };
     fetchClass();

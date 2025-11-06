@@ -1,18 +1,18 @@
 "use client";
 
-import axios from "axios";
+import API from "@/lib/api";
 import Link from "next/link";
-import { toast } from "sonner";
-import API from "@/api/axiosInstance";
-import { motion } from "motion/react";
-import { BASE_URL, getMessageFromError } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
-import { Quiz, QuizRequest } from "@/types/quiz";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import React, { use, useEffect, useState } from "react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import CreateQuizDialog from "@/components/dialogs/CreateQuizDialog";
+
+import { toast } from "sonner";
+import { motion } from "motion/react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { use, useEffect, useState } from "react";
+import { Quiz, QuizRequest } from "@/types/quiz";
+import { getMessageFromError } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 const QuizPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -51,15 +51,11 @@ const QuizPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const handleCreateQuiz = async () => {
     try {
       setCreatingQuiz(true);
-      const res = await axios.post(
-        `${BASE_URL}/quiz/generate`,
-        createQuizForm,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
+      const res = await API.post(`/quiz/generate`, createQuizForm, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
       if (res.status === 201) {
         setQuizzes((prev) => [...prev, res.data.quiz]);
       }

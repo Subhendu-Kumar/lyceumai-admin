@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+
 import { User } from "@/types/auth";
 import { useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthContext";
@@ -73,8 +74,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = () => {
     setUser(null);
-    setIsLoggedIn(false);
     removeToken();
+    setIsLoggedIn(false);
     setAccessToken(null);
   };
 
@@ -82,11 +83,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
-        isLoggedIn,
-        loading,
         signUp,
         signIn,
         signOut,
+        loading,
+        isLoggedIn,
         accessToken,
       }}
     >

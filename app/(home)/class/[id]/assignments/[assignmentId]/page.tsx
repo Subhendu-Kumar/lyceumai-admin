@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
+import API from "@/lib/api";
+import TruncatedText from "@/components/TruncatedText";
+
 import { toast } from "sonner";
-import API from "@/api/axiosInstance";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Loader } from "lucide-react";
 import { use, useEffect, useState } from "react";
-import TruncatedText from "@/components/TruncatedText";
+import { getMessageFromError } from "@/lib/utils";
 import { AssignmentWithSubmissions } from "@/types/assignment";
 
 const AssignmentSubmissions = ({
@@ -38,13 +38,8 @@ const AssignmentSubmissions = ({
         if (res.status === 200) {
           setAssignment(res.data.assignment);
         }
-      } catch (error: any) {
-        console.log(error);
-        const message =
-          error.response?.data?.detail ||
-          error.message ||
-          "Something went wrong";
-        toast.success(message);
+      } catch (error) {
+        toast.error(getMessageFromError(error));
       } finally {
         setLoading(false);
       }

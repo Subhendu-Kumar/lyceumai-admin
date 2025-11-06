@@ -2,12 +2,13 @@
 
 import clsx from "clsx";
 import Link from "next/link";
+
+import { ReactNode, use } from "react";
 import { usePathname } from "next/navigation";
-import React, { ReactNode, use } from "react";
 
 const ClassMeetingsLayout = ({
-  children,
   params,
+  children,
 }: {
   children: ReactNode;
   params: Promise<{ id: string }>;

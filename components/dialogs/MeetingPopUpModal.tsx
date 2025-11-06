@@ -1,22 +1,10 @@
-import { ReactNode } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Loader } from "lucide-react";
 
-interface MeetingModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  btnText?: string;
-  handelClick?: () => void;
-  children?: ReactNode;
-  img?: string;
-  btnIcon?: string;
-  className?: string;
-  loading: boolean;
-}
+import { cn } from "@/lib/utils";
+import { Loader } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MeetingModalProps } from "@/types/meeting";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const MeetingPopUpModal = ({
   isOpen,

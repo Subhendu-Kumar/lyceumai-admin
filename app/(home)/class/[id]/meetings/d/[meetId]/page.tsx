@@ -1,32 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
+import API from "@/lib/api";
 
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
-import API from "@/api/axiosInstance";
-import { formatDateTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { use, useEffect, useState } from "react";
+import { MeetingDetails, MeetingStatus } from "@/types/meeting";
+import { formatDateTime, getMessageFromError } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-type MeetingStatus = "ONGOING" | "CANCELED" | "SCHEDULED" | "COMPLETED";
-
-interface Recording {
-  url: string;
-  meet_date: string;
-  session_id: string;
-  summary: string | null;
-  transcript: string | null;
-}
-
-interface MeetingDetails {
-  meetId: string;
-  classroomId: string;
-  MeetingTime: string;
-  description: string;
-  recordings: Recording[];
-  meetStatus: MeetingStatus;
-}
 
 const MeetingDetailsPage = ({
   params,
@@ -50,13 +32,8 @@ const MeetingDetailsPage = ({
         if (res.status === 200) {
           setMeetingDetails(res.data.meeting);
         }
-      } catch (error: any) {
-        console.log(error);
-        const message =
-          error.response?.data?.detail ||
-          error.message ||
-          "Something went wrong";
-        toast.success(message);
+      } catch (error) {
+        toast.success(getMessageFromError(error));
       } finally {
         setLoadingMeeting(false);
       }

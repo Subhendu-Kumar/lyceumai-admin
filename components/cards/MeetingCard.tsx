@@ -1,19 +1,10 @@
 "use client";
 
 import Image from "next/image";
+
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
-
-interface MeetingCardProps {
-  date: string;
-  icon: string;
-  title: string;
-  buttonText?: string;
-  buttonIcon1?: string;
-  onCardClick?: () => void;
-  handleClick: () => void;
-  isPreviousMeeting?: boolean;
-}
+import { MeetingCardProps } from "@/types/meeting";
 
 const MeetingCard = ({
   icon,

@@ -49,6 +49,9 @@ export const formatDateTime = (dateString?: string | null): string => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getMessageFromError = (error: any): string => {
   return (
-    error.response?.data?.detail || error.message || "Something went wrong"
+    error.response?.data?.detail ||
+    error.message ||
+    error.toString() ||
+    "Something went wrong"
   );
 };

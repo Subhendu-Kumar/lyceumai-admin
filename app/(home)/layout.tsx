@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import Navbar from "@/components/navbar/Navbar";
+
+import { useEffect } from "react";
 import { Loader } from "lucide-react";
-import React, { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/navbar/Navbar";
-import { useAuth } from "@/hooks/useAuth";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 const HomeLayout = ({ children }: { children: React.ReactNode }) => {

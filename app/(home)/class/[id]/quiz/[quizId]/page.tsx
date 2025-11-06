@@ -1,13 +1,14 @@
 "use client";
 
-import axios from "axios";
+import API from "@/lib/api";
+import QuestionField from "@/components/QuestionField";
+
 import { toast } from "sonner";
-import { BASE_URL, getMessageFromError } from "@/lib/utils";
 import { Question, Quiz } from "@/types/quiz";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import QuestionField from "@/components/QuestionField";
-import React, { use, useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
+import { getMessageFromError } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const QuizDetailsPage = ({
@@ -22,7 +23,7 @@ const QuizDetailsPage = ({
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/quiz/${quizId}`);
+        const res = await API.get(`/quiz/${quizId}`);
         if (res.status === 200) {
           setQuiz({
             id: res.data.quiz.id,
@@ -47,7 +48,7 @@ const QuizDetailsPage = ({
     const toastId = toast.loading("Publishing quiz...");
 
     try {
-      const res = await axios.patch(`${BASE_URL}/quiz/publish/${quiz_id}`);
+      const res = await API.patch(`/quiz/publish/${quiz_id}`);
 
       if (res.status == 202) {
         toast.success("Quiz published successfully", { id: toastId });

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import {
   Card,
   CardTitle,
@@ -7,17 +9,16 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card";
-import Link from "next/link";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
+import { getMessageFromError } from "@/lib/utils";
 import { SignUpForm, signUpSchema } from "@/types/auth";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { getMessageFromError } from "@/lib/utils";
 
 const SignUpPage = () => {
   const router = useRouter();

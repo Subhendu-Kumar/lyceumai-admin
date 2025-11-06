@@ -1,8 +1,11 @@
 import "./globals.css";
-import type { Metadata } from "next";
-import { Toaster } from "@/components/ui/sonner";
 import "react-datepicker/dist/react-datepicker.css";
+
+import type { Metadata } from "next";
+
 import AuthProvider from "@/providers/auth.provider";
+
+import { Toaster } from "@/components/ui/sonner";
 import { Geist, Geist_Mono } from "next/font/google";
 
 const geistSans = Geist({

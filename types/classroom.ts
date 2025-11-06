@@ -5,3 +5,16 @@ export interface ClassRoom {
   syllabusUrl: string;
   description: string;
 }
+
+export interface Student {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface Enrollment {
+  id: string;
+  student: Student;
+  joinedAt: string;
+  classroomId: string;
+}

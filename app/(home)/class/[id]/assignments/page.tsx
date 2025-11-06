@@ -1,16 +1,17 @@
 "use client";
 
+import API from "@/lib/api";
+import CreateAssignmentDialog from "@/components/dialogs/CreateAssignmentDialog";
+
 import { toast } from "sonner";
-import API from "@/api/axiosInstance";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { use, useEffect, useState } from "react";
+import { getMessageFromError } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Assignment, AssignmentFormData } from "@/types/assignment";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import CreateAssignmentDialog from "@/components/dialogs/CreateAssignmentDialog";
-import { getMessageFromError } from "@/lib/utils";
 
 const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);

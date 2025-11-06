@@ -1,13 +1,15 @@
 "use client";
 
+import API from "@/lib/api";
+import MeetingCard from "./cards/MeetingCard";
+
+import { toast } from "sonner";
 import { Loader } from "lucide-react";
+import { Call } from "@/types/meeting";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { formatDateTime } from "@/lib/utils";
-import MeetingCard from "./cards/MeetingCard";
-import { Call, useGetCalls } from "@/hooks/useGetCalls";
-import { toast } from "sonner";
-import API from "@/api/axiosInstance";
+import { useGetCalls } from "@/hooks/useGetCalls";
+import { formatDateTime, getMessageFromError } from "@/lib/utils";
 
 const CallTypeList = ({
   type,
@@ -72,19 +74,11 @@ const CallTypeList = ({
                   } else {
                     toast("not able to start meeting right now");
                   }
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                } catch (error: any) {
-                  console.log(error);
-                  const message =
-                    error.response?.data?.detail ||
-                    error.message ||
-                    "Something went wrong";
-                  toast.success(message);
+                } catch (error) {
+                  toast.success(getMessageFromError(error));
                 }
               }}
-              icon={
-                type === "ended" ? "/icons/previous.svg" : "/icons/upcoming.svg"
-              }
+              icon={type === "ended" ? "/previous.svg" : "/upcoming.svg"}
               onCardClick={
                 type === "upcoming"
                   ? undefined

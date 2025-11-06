@@ -1,51 +1,41 @@
 "use client";
 
-import {
-  deleteMaterial,
-  uploadMaterial,
-  getClassRoomMaterials,
-} from "@/api/class_room";
+import API from "@/lib/api";
+import MaterialUploadDialog from "@/components/dialogs/MaterialUploadDialog";
+import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
+
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { motion } from "motion/react";
-import React, { use, useEffect, useState } from "react";
-import MaterialUploadDialog from "@/components/dialogs/MaterialUploadDialog";
-import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
+import { Material } from "@/types/material";
+import { use, useEffect, useState } from "react";
 import { getMessageFromError } from "@/lib/utils";
-
-type Material = {
-  id: string;
-  title: string;
-  fileUrl: string;
-  uploadedAt: string;
-  classroomId: string;
-};
 
 const skeletonArray = Array.from({ length: 6 });
 
 const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
-  const [materials, setMaterials] = useState<Material[]>([]);
+
+  const [title, setTitle] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [fetching, setFetching] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>("");
-  const [file, setFile] = useState<File | null>(null);
+  const [materials, setMaterials] = useState<Material[]>([]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
       try {
         setFetching(true);
-        const res = await getClassRoomMaterials(id);
+        const res = await API.get(`/class/materials/${id}`);
+
+        if (res.status !== 200) {
+          throw new Error("Failed to fetch materials");
+        }
+
         setMaterials(res.data.materials);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error("Error fetching class data:", error);
-        const message =
-          error.response?.data?.detail ||
-          error.message ||
-          "Something went wrong";
-        setError(message);
+      } catch (error) {
+        setError(getMessageFromError(error));
       } finally {
         setFetching(false);
       }
@@ -55,7 +45,12 @@ const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const handleDeleteMaterial = async (material_id: string) => {
     try {
-      await deleteMaterial(material_id);
+      const res = await API.delete(`/class/material/${material_id}`);
+
+      if (res.status !== 202) {
+        throw new Error("failed to delete material");
+      }
+
       setMaterials((prev) => prev.filter((mat) => mat.id !== material_id));
       toast.success("Material deleted successfully");
     } catch (error) {
@@ -74,7 +69,17 @@ const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
     }
     setLoading(true);
     try {
-      const res = await uploadMaterial(file, title.trim(), id);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("title", title);
+      formData.append("classroomId", id);
+
+      const res = await API.post(`/class/material`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       if (res.status === 201) {
         setMaterials((prev) => [res.data.material, ...prev]);
         toast.success("Material uploaded successfully");

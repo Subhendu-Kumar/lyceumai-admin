@@ -1,11 +1,7 @@
-interface TruncatedTextProps {
-  text: string;
-  limit?: number;
-  expanded: boolean;
-  onToggle: () => void;
-}
+import { FC } from "react";
+import { TruncatedTextProps } from "@/types/miscellaneous";
 
-const TruncatedText: React.FC<TruncatedTextProps> = ({
+const TruncatedText: FC<TruncatedTextProps> = ({
   text,
   limit = 100,
   expanded,
