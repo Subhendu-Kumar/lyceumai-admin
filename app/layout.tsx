@@ -4,6 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import type { Metadata } from "next";
 
 import AuthProvider from "@/providers/auth.provider";
+import InstallPrompt from "@/components/InstallPrompt";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
 import { Toaster } from "@/components/ui/sonner";
@@ -46,6 +47,7 @@ export default function RootLayout({
         <AuthProvider>{children}</AuthProvider>
         <Toaster />
         <ServiceWorkerRegistration />
+        <InstallPrompt />
       </body>
     </html>
   );
