@@ -28,11 +28,10 @@ export const removeToken = (): void => {
 
 export const formatDateTime = (dateString?: string | null): string => {
   if (!dateString) return "N/A";
-
   const date = new Date(dateString);
-
-  if (isNaN(date.getTime())) return "Invalid date";
-
+  if (isNaN(date.getTime())) {
+    return "Invalid date";
+  }
   return date.toLocaleString("en-IN", {
     hour12: true,
     day: "2-digit",

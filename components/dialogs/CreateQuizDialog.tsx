@@ -17,8 +17,8 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Loader } from "lucide-react";
 import { Textarea } from "../ui/textarea";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { QuizRequest, QuizRequestError } from "@/types/quiz";
-import React, { ChangeEvent, FormEvent, useState } from "react";
 
 const CreateQuizDialog = ({
   open,

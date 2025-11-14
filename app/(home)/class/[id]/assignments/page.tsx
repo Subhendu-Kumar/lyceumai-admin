@@ -119,16 +119,13 @@ const AssignmentsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           ))}
         </div>
       ) : assignments.length === 0 ? (
-        <div className="text-center text-red-500 mt-20">
+        <div className="text-center text-gray-600 mt-12">
           <p>No assignments found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {assignments.map((assignment) => (
-            <Card
-              key={assignment.id}
-              className="rounded-2xl shadow-md hover:shadow-lg transition border"
-            >
+            <Card key={assignment.id} className="rounded-2xl shadow-md border">
               <CardHeader>
                 <CardTitle className="text-xl font-bold line-clamp-1">
                   {assignment.title}

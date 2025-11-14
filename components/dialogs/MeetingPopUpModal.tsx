@@ -7,16 +7,16 @@ import { MeetingModalProps } from "@/types/meeting";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const MeetingPopUpModal = ({
-  isOpen,
-  onClose,
-  title,
-  btnText,
-  handelClick,
-  children,
   img,
+  title,
+  isOpen,
+  btnText,
   btnIcon,
-  className,
   loading,
+  onClose,
+  children,
+  className,
+  handelClick,
 }: MeetingModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

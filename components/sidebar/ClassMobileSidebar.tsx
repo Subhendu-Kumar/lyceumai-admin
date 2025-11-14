@@ -1,19 +1,20 @@
 "use client";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import clsx from "clsx";
-import { Menu } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+
 import { use } from "react";
+import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const ClassMobileSidebar = ({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) => {
-  const pathname = usePathname();
   const { id } = use(params);
+  const pathname = usePathname();
 
   const links = [
     { href: `/class/${id}`, label: "Stream" },

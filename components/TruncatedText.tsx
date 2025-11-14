@@ -3,9 +3,9 @@ import { TruncatedTextProps } from "@/types/miscellaneous";
 
 const TruncatedText: FC<TruncatedTextProps> = ({
   text,
-  limit = 100,
   expanded,
   onToggle,
+  limit = 100,
 }) => {
   if (text.length <= limit) {
     return <p className="text-base text-gray-600">{text}</p>;

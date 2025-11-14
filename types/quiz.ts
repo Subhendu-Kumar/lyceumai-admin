@@ -1,19 +1,19 @@
+export type Difficulty = "EASY" | "MEDIUM" | "HARD";
+
 export interface Question {
   id: string;
+  answer: number;
   question: string;
   options: string[];
-  answer: number;
 }
 
 export interface Quiz {
   id: string;
   title: string;
-  description: string;
   published: boolean;
   updatedAt?: string;
+  description: string;
 }
-
-export type Difficulty = "EASY" | "MEDIUM" | "HARD";
 
 export interface QuizRequest {
   title: string;
@@ -28,7 +28,7 @@ export interface QuizRequestError {
   title?: string;
   topic?: string;
   class_id?: string;
-  description?: string;
   difficulty?: string;
+  description?: string;
   number_of_questions?: string;
 }

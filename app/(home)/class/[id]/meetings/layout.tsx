@@ -17,22 +17,22 @@ const ClassMeetingsLayout = ({
   const pathname = usePathname();
 
   const links = [
-    { href: `/class/${id}/meetings`, label: "Ended Meetings" },
+    { href: `/class/${id}/meetings`, label: "Previous Meetings" },
     { href: `/class/${id}/meetings/upcoming`, label: "Upcoming Meetings" },
   ];
 
   return (
     <div className="w-full h-full">
-      <div className="w-full h-12 bg-purple-50 rounded-lg py-2 flex items-center justify-center space-x-3">
+      <div className="w-full h-12 bg-blue-50 rounded-lg py-2 flex items-center justify-center space-x-3">
         {links.map(({ href, label }) => (
           <Link
             key={href}
             href={href}
             className={clsx(
-              "px-3 py-0.5 rounded-lg transition hover:bg-purple-100 hover:translate-x-1",
+              "px-3 py-0.5 rounded-lg transition hover:bg-blue-100",
               pathname === href
-                ? "bg-purple-200 text-purple-800 font-semibold"
-                : "text-gray-800 hover:text-purple-800"
+                ? "bg-blue-200 text-blue-800 font-semibold"
+                : "text-gray-800 hover:text-blue-800"
             )}
           >
             {label}

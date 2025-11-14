@@ -28,7 +28,7 @@ const MaterialUploadDialog = ({
   setFile: (file: File | null) => void;
 }) => {
   const [open, setOpen] = useState(false);
-  
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

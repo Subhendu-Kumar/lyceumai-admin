@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function ServiceWorkerRegistration() {
+const ServiceWorkerRegistration = () => {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -19,4 +19,6 @@ export default function ServiceWorkerRegistration() {
   }, []);
 
   return null;
-}
+};
+
+export default ServiceWorkerRegistration;

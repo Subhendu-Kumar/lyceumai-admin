@@ -29,7 +29,7 @@ const HomeLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!isLoggedIn) {
-    return null; // prevents flicker while redirecting
+    return null;
   }
 
   if (user?.role !== "TEACHER") {

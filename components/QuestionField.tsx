@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
 import { Question } from "@/types/quiz";
 import { Circle, Save } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const QuestionField = ({ question }: { question: Question }) => {
   const ref = useRef(null);
@@ -17,12 +17,8 @@ const QuestionField = ({ question }: { question: Question }) => {
   };
 
   useEffect(() => {
-    // attach listener
     document.addEventListener("mousedown", handleClickOutside);
-
-    // sync field with question
     setFieldQuestion(question);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };

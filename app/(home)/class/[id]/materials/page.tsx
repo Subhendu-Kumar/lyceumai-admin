@@ -6,12 +6,11 @@ import MaterialPreviewDialog from "@/components/dialogs/MaterialPreviewDialog";
 
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
-import { motion } from "motion/react";
 import { Material } from "@/types/material";
 import { use, useEffect, useState } from "react";
 import { getMessageFromError } from "@/lib/utils";
 
-const skeletonArray = Array.from({ length: 6 });
+const skeletonArray = Array.from({ length: 4 });
 
 const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -28,11 +27,9 @@ const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
       try {
         setFetching(true);
         const res = await API.get(`/class/materials/${id}`);
-
         if (res.status !== 200) {
           throw new Error("Failed to fetch materials");
         }
-
         setMaterials(res.data.materials);
       } catch (error) {
         setError(getMessageFromError(error));
@@ -46,11 +43,9 @@ const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
   const handleDeleteMaterial = async (material_id: string) => {
     try {
       const res = await API.delete(`/class/material/${material_id}`);
-
       if (res.status !== 202) {
         throw new Error("failed to delete material");
       }
-
       setMaterials((prev) => prev.filter((mat) => mat.id !== material_id));
       toast.success("Material deleted successfully");
     } catch (error) {
@@ -73,13 +68,11 @@ const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
       formData.append("file", file);
       formData.append("title", title);
       formData.append("classroomId", id);
-
       const res = await API.post(`/class/material`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
       if (res.status === 201) {
         setMaterials((prev) => [res.data.material, ...prev]);
         toast.success("Material uploaded successfully");
@@ -108,61 +101,34 @@ const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
         />
       </div>
       {fetching ? (
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.1 },
-            },
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {skeletonArray.map((_, idx) => (
-            <motion.div
+            <div
               key={idx}
               className="p-6 border rounded-xl shadow-md bg-white flex flex-col justify-between animate-pulse"
-              variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
             >
               <div>
                 <div className="h-6 w-2/3 bg-gray-200 rounded mb-4" />
                 <div className="h-4 w-1/2 bg-gray-200 rounded" />
               </div>
               <div className="mt-6 h-10 w-full bg-gray-200 rounded-lg" />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       ) : error ? (
-        <div className="w-full h-60 flex items-center justify-center text-red-500">
+        <div className="w-full h-60 flex items-center justify-center text-gray-600">
           {error}
         </div>
       ) : materials.length === 0 ? (
-        <div className="w-full h-60 flex items-center justify-center text-red-500">
+        <div className="w-full h-60 flex items-center justify-center text-gray-600">
           No materials found.
         </div>
       ) : (
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: { staggerChildren: 0.1 },
-            },
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {materials.map((material) => (
-            <motion.div
+            <div
               key={material.id}
-              className="p-6 border rounded-xl shadow-md bg-white flex flex-col justify-between hover:shadow-lg transition"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+              className="p-6 border rounded-xl shadow-md bg-white flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
@@ -182,9 +148,9 @@ const ClassMaterials = ({ params }: { params: Promise<{ id: string }> }) => {
                 title={material.title}
                 fileUrl={material.fileUrl}
               />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       )}
     </div>
   );

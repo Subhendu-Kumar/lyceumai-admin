@@ -1,23 +1,19 @@
-import React from "react";
-import { Plus, User, LogOut } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import Link from "next/link";
 import Image from "next/image";
-// import ClassMobileSidebar from "../sidebar/ClassMobileSidebar";
-import { usePathname } from "next/navigation";
+
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "../ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
+import { Plus, User, LogOut } from "lucide-react";
 
 const Navbar = () => {
-  const pathname = usePathname();
   const { user, signOut } = useAuth();
-  const isClassRoute = pathname.startsWith("/class");
 
   const AccountDropDown = () => (
     <DropdownMenu>
@@ -47,15 +43,12 @@ const Navbar = () => {
   );
 
   return (
-    <header className="w-full h-16 bg-blue-50 shadow-sm lg:px-10 md:px-8 sm:px-6 px-4">
-      <div className="flex h-full w-full items-center justify-between py-2">
+    <header className="w-full h-16 bg-white lg:px-10 md:px-8 sm:px-6 px-4 border-b border-gray-200">
+      <div className="flex h-full w-full items-center justify-between">
         <div className="flex items-center space-x-3">
-          {isClassRoute && (
-            <div className="md:hidden">{/* <ClassMobileSidebar /> */}</div>
-          )}
           <Link href="/" className="flex items-center space-x-2">
             <Image src={"/logo.png"} height={45} width={45} alt="Logo" />
-            <span className="text-lg font-semibold text-gray-800">
+            <span className="text-lg font-semibold font-serif text-gray-800">
               Lyceum AI
             </span>
           </Link>

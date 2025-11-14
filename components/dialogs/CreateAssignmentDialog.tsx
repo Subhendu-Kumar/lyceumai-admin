@@ -1,39 +1,39 @@
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
   Select,
-  SelectTrigger,
+  SelectItem,
   SelectValue,
   SelectContent,
-  SelectItem,
+  SelectTrigger,
 } from "@/components/ui/select";
-import { AssignmentFormData, TypeOption } from "@/types/assignment";
-import { Dispatch, SetStateAction, useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogHeader,
+  DialogFooter,
+  DialogContent,
+} from "@/components/ui/dialog";
 import { Loader } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Dispatch, SetStateAction, useState } from "react";
+import { AssignmentFormData, TypeOption } from "@/types/assignment";
 
 const CreateAssignmentDialog = ({
-  formData,
-  setFormData,
-  isLoading,
   open,
-  onOpenChange,
+  formData,
+  isLoading,
   submitData,
+  setFormData,
+  onOpenChange,
 }: {
-  formData: AssignmentFormData;
-  setFormData: Dispatch<SetStateAction<AssignmentFormData>>;
-  isLoading: boolean;
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  isLoading: boolean;
+  formData: AssignmentFormData;
   submitData: () => Promise<void>;
+  onOpenChange: (open: boolean) => void;
+  setFormData: Dispatch<SetStateAction<AssignmentFormData>>;
 }) => {
   const [formErrors, setFormErrors] = useState<
     Partial<Record<keyof AssignmentFormData, string>>

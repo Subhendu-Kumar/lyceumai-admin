@@ -4,11 +4,11 @@ import API from "@/lib/api";
 import MeetingCard from "./cards/MeetingCard";
 
 import { toast } from "sonner";
-import { Loader } from "lucide-react";
 import { Call } from "@/types/meeting";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useGetCalls } from "@/hooks/useGetCalls";
+import { CalendarSync, History, Loader } from "lucide-react";
 import { formatDateTime, getMessageFromError } from "@/lib/utils";
 
 const CallTypeList = ({
@@ -75,10 +75,10 @@ const CallTypeList = ({
                     toast("not able to start meeting right now");
                   }
                 } catch (error) {
-                  toast.success(getMessageFromError(error));
+                  toast.error(getMessageFromError(error));
                 }
               }}
-              icon={type === "ended" ? "/previous.svg" : "/upcoming.svg"}
+              icon={type === "ended" ? History : CalendarSync}
               onCardClick={
                 type === "upcoming"
                   ? undefined

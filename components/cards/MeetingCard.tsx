@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { MeetingCardProps } from "@/types/meeting";
 
 const MeetingCard = ({
-  icon,
+  icon: Icon,
   date,
   title,
   buttonText,
@@ -19,11 +19,11 @@ const MeetingCard = ({
   return (
     <section
       onClick={onCardClick}
-      className="flex w-full flex-col justify-between rounded-[14px] bg-zinc-200 px-5 py-8 xl:max-w-[568px]"
+      className="flex w-full flex-col justify-between rounded-[14px] bg-white border px-5 py-8 xl:max-w-[568px]"
     >
       <article className="flex flex-col gap-5">
-        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-          <Image src={icon} alt="upcoming" width={24} height={24} />
+        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+          <Icon />
         </div>
         <div className="flex justify-between">
           <div className="flex flex-col gap-2">
@@ -39,7 +39,7 @@ const MeetingCard = ({
               e.stopPropagation();
               handleClick();
             }}
-            className="rounded bg-blue-500 hover:bg-blue-600 px-6"
+            className="rounded bg-blue-500 hover:bg-blue-600 px-6 cursor-pointer text-white font-semibold"
           >
             {buttonIcon1 && (
               <Image src={buttonIcon1} alt="feature" width={20} height={20} />

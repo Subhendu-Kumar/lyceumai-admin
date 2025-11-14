@@ -1,17 +1,16 @@
-import React from "react";
-import { Card } from "@/components/ui/card";
-import { Edit, Folder, MoreVertical, Trash2, TrendingUp } from "lucide-react";
-import { ClassRoom } from "@/types/classroom";
 import Link from "next/link";
 
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
+import { Card } from "@/components/ui/card";
+import { ClassRoom } from "@/types/classroom";
+import { Edit, FolderOpen, MoreVertical, Trash2, Users } from "lucide-react";
 
 const ClassCard = ({
   classroom,
@@ -50,7 +49,7 @@ const ClassCard = ({
   };
 
   return (
-    <Card className="rounded-2xl overflow-hidden flex flex-col justify-between h-72 shadow-sm border p-0">
+    <Card className="rounded-2xl overflow-hidden flex flex-col justify-between h-60 shadow-sm border p-0">
       <div className="h-28 bg-[url('/Math.jpg')] bg-cover bg-center  flex items-start justify-between p-4">
         <Link
           href={`/class/${classroom.id}`}
@@ -60,9 +59,19 @@ const ClassCard = ({
         </Link>
       </div>
       <div className="flex items-center justify-between border-t bg-white p-6">
-        <div className="flex space-x-4">
-          <TrendingUp className="h-5 w-5 text-gray-700" />
-          <Folder className="h-5 w-5 text-gray-700" />
+        <div className="flex space-x-3">
+          <Link
+            href={`/class/${classroom.id}/people`}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200"
+          >
+            <Users className="h-5 w-5 text-gray-700" />
+          </Link>
+          <Link
+            href={`class/${classroom.id}/materials`}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200"
+          >
+            <FolderOpen className="h-5 w-5 text-gray-700" />
+          </Link>
         </div>
         <ClassRoomOptions />
       </div>

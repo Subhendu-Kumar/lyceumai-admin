@@ -1,5 +1,7 @@
 import { User } from "./auth";
 
+export type TypeOption = "VOICE" | "TEXT";
+
 export interface Assignment {
   id: string;
   type: string;
@@ -8,8 +10,6 @@ export interface Assignment {
   question: string;
   createdAt: string;
 }
-
-export type TypeOption = "VOICE" | "TEXT";
 
 export interface AssignmentFormData {
   title: string;

@@ -1,39 +1,64 @@
 "use client";
 
-import clsx from "clsx";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+
+import {
+  Users,
+  Megaphone,
+  FolderOpen,
+  NotebookPen,
+  ClipboardList,
+  CalendarClock,
+  LayoutDashboard,
+} from "lucide-react";
 import { use } from "react";
+import { usePathname } from "next/navigation";
+import { ClassNavLinks } from "@/types/miscellaneous";
 
 const ClassSideBar = ({ params }: { params: Promise<{ id: string }> }) => {
-  const pathname = usePathname();
   const { id } = use(params);
+  const pathname = usePathname();
 
-  const links = [
-    { href: `/class/${id}`, label: "Stream" },
-    { href: `/class/${id}/announcements`, label: "Announcements" },
-    { href: `/class/${id}/meetings`, label: "Class Meetings" },
-    { href: `/class/${id}/assignments`, label: "Assignments" },
-    { href: `/class/${id}/materials`, label: "Materials" },
-    { href: `/class/${id}/quiz`, label: "Quiz" },
-    { href: `/class/${id}/people`, label: "People" },
+  const classNavLinks: ClassNavLinks[] = [
+    { href: `/class/${id}`, label: "Dashboard", icon: LayoutDashboard },
+    {
+      href: `/class/${id}/announcements`,
+      label: "Announcements",
+      icon: Megaphone,
+    },
+    {
+      href: `/class/${id}/meetings`,
+      label: "Meetings",
+      icon: CalendarClock,
+    },
+    {
+      href: `/class/${id}/assignments`,
+      label: "Assignments",
+      icon: NotebookPen,
+    },
+    { href: `/class/${id}/materials`, label: "Materials", icon: FolderOpen },
+    { href: `/class/${id}/quiz`, label: "Quiz", icon: ClipboardList },
+    { href: `/class/${id}/people`, label: "Peoples", icon: Users },
   ];
 
   return (
-    <div className="w-72 h-full bg-blue-50 shadow-sm p-6 hidden md:block">
+    <div className="w-72 h-full bg-white border-r border-gray-200 p-6 hidden md:block">
       <nav className="flex flex-col space-y-2">
-        {links.map(({ href, label }) => (
+        {classNavLinks.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
-            className={clsx(
-              "px-3 py-2 rounded-lg transition hover:bg-indigo-100 hover:translate-x-1",
-              pathname === href
-                ? "bg-indigo-200 text-indigo-800 font-semibold"
-                : "text-gray-800 hover:text-indigo-800"
-            )}
+            className={`
+              px-3 py-2 rounded-lg transition hover:bg-blue-100 flex items-center justify-start gap-3
+              ${
+                pathname === href
+                  ? "bg-blue-200 text-blue-800 font-semibold"
+                  : "text-gray-800 hover:text-blue-800"
+              }
+            `}
           >
-            {label}
+            <Icon />
+            <p>{label}</p>
           </Link>
         ))}
       </nav>

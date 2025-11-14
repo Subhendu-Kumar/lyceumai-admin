@@ -5,7 +5,6 @@ import Link from "next/link";
 import CreateQuizDialog from "@/components/dialogs/CreateQuizDialog";
 
 import { toast } from "sonner";
-import { motion } from "motion/react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { use, useEffect, useState } from "react";
@@ -115,13 +114,9 @@ const QuizPage = ({ params }: { params: Promise<{ id: string }> }) => {
           ))}
         </div>
       ) : quizzes.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-gray-500 text-center py-10"
-        >
+        <div className="text-gray-500 text-center py-10">
           No quizzes available
-        </motion.div>
+        </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {quizzes.map((quiz) => (

@@ -1,3 +1,4 @@
+import { type LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
 
 export type MeetingStatus = "ONGOING" | "CANCELED" | "SCHEDULED" | "COMPLETED";
@@ -29,7 +30,7 @@ export interface MeetingDetails {
 
 export interface MeetingCardProps {
   date: string;
-  icon: string;
+  icon: LucideIcon;
   title: string;
   buttonText?: string;
   buttonIcon1?: string;
